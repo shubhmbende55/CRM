@@ -18,86 +18,105 @@
       --dark: #1e293b;
       --light: #f1f5f9;
     }
+
     body {
       font-family: 'Inter', sans-serif;
       background: linear-gradient(135deg, #f0f9ff 0%, #e6f7ff 100%);
       color: #334155;
       transition: background 0.3s ease, color 0.3s ease;
     }
+
     body.dark-mode {
       background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
       color: #cbd5e1;
     }
+
     .card {
       background: white;
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
       transition: all 0.3s ease;
     }
+
     .dark-mode .card {
       background: #1e293b;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
       color: #e2e8f0;
     }
+
     .card:hover {
       box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
     }
+
     .dark-mode .card:hover {
       box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
     }
+
     .status-tile {
       transition: all 0.3s ease;
       cursor: pointer;
       border-radius: 10px;
       overflow: hidden;
     }
+
     .status-tile:hover {
       transform: translateY(-5px);
       box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
     }
+
     .dark-mode .status-tile:hover {
       box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
     }
+
     .status-tile.active {
         border: 2px solid var(--primary);
         box-shadow: 0 8px 25px rgba(37, 99, 235, 0.3);
     }
+
     .btn {
       transition: all 0.3s ease;
       font-weight: 500;
       border-radius: 8px;
       padding: 10px 16px;
     }
+
     .btn-primary {
       background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
       color: white;
       border: none;
     }
+
     .btn-primary:hover {
       background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
       box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
     }
+
     .btn-danger {
       background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
       color: white;
       border: none;
     }
+
     .btn-danger:hover {
       background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
       box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);
     }
+
     .btn-success {
       background: linear-gradient(135deg, #10b981 0%, #059669 100%);
       color: white;
       border: none;
     }
+
     .btn-success:hover {
       background: linear-gradient(135deg, #059669 0%, #047857 100%);
       box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
     }
+
     .dark-mode .btn {
       color: white;
     }
+
     .modal {
       display: none;
       position: fixed;
@@ -110,6 +129,7 @@
       align-items: center;
       justify-content: center;
     }
+
     .modal-content {
       background: white;
       border-radius: 12px;
@@ -118,40 +138,50 @@
       box-shadow: 0 10px 30px rgba(0,0,0,0.2);
       animation: modalAppear 0.3s ease-out;
     }
+
     .dark-mode .modal-content {
       background: #1e293b;
       color: #e2e8f0;
     }
+
     @keyframes modalAppear {
       from { opacity: 0; transform: translateY(-20px); }
       to { opacity: 1; transform: translateY(0); }
     }
+
     .confirmation-buttons {
       display: flex;
       gap: 12px;
       justify-content: flex-end;
     }
+
     .highlight {
       animation: highlight 2s ease;
     }
+
     @keyframes highlight {
       0% { background-color: rgba(251, 191, 36, 0.4); }
       100% { background-color: transparent; }
     }
+
     .desktop-only {
       display: table;
       width: 100%;
     }
+
     .mobile-details {
       display: none;
     }
+
     @media (max-width: 768px) {
       .desktop-only {
         display: none;
       }
+
       .mobile-details {
         display: block;
       }
+
       .mobile-row {
         display: flex;
         flex-direction: column;
@@ -159,46 +189,56 @@
         border-bottom: 1px solid #e2e8f0;
         background: white;
       }
+
       .dark-mode .mobile-row {
         background: #1e293b;
         border-bottom: 1px solid #334155;
       }
+
       .mobile-row-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
         margin-bottom: 12px;
       }
+
       .mobile-actions {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
         gap: 8px;
         margin-top: 12px;
       }
+
       .mobile-row-content {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 12px;
       }
+
       .mobile-row-item {
         display: flex;
         flex-direction: column;
       }
+
       .mobile-row-label {
         font-size: 12px;
         color: #64748b;
         margin-bottom: 4px;
       }
+
       .dark-mode .mobile-row-label {
         color: #94a3b8;
       }
+
       .mobile-row-value {
         font-weight: 500;
       }
+
       .mobile-note {
         grid-column: span 2;
         margin-top: 8px;
       }
+
       .note-button {
         background: #e0f2fe;
         color: #0369a1;
@@ -210,27 +250,34 @@
         gap: 6px;
         cursor: pointer;
       }
+
       .dark-mode .note-button {
         background: #0c4a6e;
         color: #bae6fd;
       }
+
       .stats-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
       }
+
       .controls-grid {
         grid-template-columns: 1fr !important;
       }
+
       .action-buttons {
         flex-direction: column !important;
         gap: 0.5rem !important;
       }
+
       .mobile-collapsible {
         width: 100% !important;
       }
+
       .source-filter {
         margin-top: 0.5rem !important;
       }
     }
+
     .source-badge {
       display: inline-flex;
       align-items: center;
@@ -242,10 +289,12 @@
       font-size: 0.75rem;
       font-weight: 500;
     }
+
     .dark-mode .source-badge {
       background-color: #0c4a6e;
       color: #bae6fd;
     }
+
     .filter-container {
       background: white;
       padding: 1rem;
@@ -253,35 +302,43 @@
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
       margin-bottom: 1.5rem;
     }
+
     .dark-mode .filter-container {
       background: #1e293b;
     }
+
     .source-file-list {
       max-height: 200px;
       overflow-y: auto;
       margin-top: 0.5rem;
     }
+
     .source-file-item {
       padding: 0.5rem;
       border-radius: 0.25rem;
       cursor: pointer;
       transition: all 0.2s;
     }
+
     .source-file-item:hover {
       background-color: #f1f5f9;
     }
+
     .dark-mode .source-file-item:hover {
       background-color: #334155;
     }
+
     .source-file-item.active {
       background-color: #dbeafe;
       font-weight: 600;
       color: var(--primary);
     }
+
     .dark-mode .source-file-item.active {
       background-color: #1e40af;
       color: white;
     }
+
     .status-badge {
       display: inline-block;
       padding: 4px 10px;
@@ -290,6 +347,7 @@
       font-weight: 600;
       text-transform: capitalize;
     }
+
     .status-interested { background: #dcfce7; color: #166534; }
     .status-hot { background: #fee2e2; color: #b91c1c; }
     .status-warm { background: #ffedd5; color: #c2410c; }
@@ -297,6 +355,7 @@
     .status-already-booked { background: #ede9fe; color: #5b21b6; }
     .status-not-interested { background: #e5e7eb; color: #374151; }
     .status-call-not-received { background: #f3f4f6; color: #4b5563; }
+
     .dark-mode .status-interested { background: #14532d; color: #bbf7d0; }
     .dark-mode .status-hot { background: #7f1d1d; color: #fecaca; }
     .dark-mode .status-warm { background: #7c2d12; color: #fed7aa; }
@@ -304,6 +363,7 @@
     .dark-mode .status-already-booked { background: #4c1d95; color: #ddd6fe; }
     .dark-mode .status-not-interested { background: #374151; color: #e5e7eb; }
     .dark-mode .status-call-not-received { background: #334155; color: #f1f5f9; }
+
     .mobile-action-bar {
       position: fixed;
       bottom: 0;
@@ -316,16 +376,19 @@
       padding: 12px;
       box-shadow: 0 -4px 12px rgba(0,0,0,0.05);
     }
+
     .dark-mode .mobile-action-bar {
       background: #1e293b;
       border-top: 1px solid #334155;
       box-shadow: 0 -4px 12px rgba(0,0,0,0.2);
     }
+
      @media (max-width: 768px) {
       .mobile-action-bar {
         display: flex;
       }
      }
+
     .mobile-action-button {
       display: flex;
       flex-direction: column;
@@ -337,18 +400,23 @@
       background: none;
       border: none;
     }
+
     .dark-mode .mobile-action-button {
       color: #94a3b8;
     }
+
     .mobile-action-button i {
       font-size: 20px;
     }
+
     .mobile-action-button.active {
       color: var(--primary);
     }
+
     .dark-mode .mobile-action-button.active {
       color: #60a5fa;
     }
+
     .notification-badge {
       position: absolute;
       top: -5px;
@@ -364,6 +432,7 @@
       font-size: 12px;
       font-weight: bold;
     }
+
     /* Dark mode toggle button */
     .theme-toggle {
       background: transparent;
@@ -379,67 +448,87 @@
       align-items: center;
       justify-content: center;
     }
+
     .dark-mode .theme-toggle {
       color: #cbd5e1;
     }
+
     .theme-toggle:hover {
       background: rgba(0, 0, 0, 0.05);
     }
+
     .dark-mode .theme-toggle:hover {
       background: rgba(255, 255, 255, 0.05);
     }
+
     .dark-mode .theme-toggle .fa-sun {
       color: #f59e0b;
     }
+
     .theme-toggle .fa-moon {
       color: #4b5563;
     }
+
     .dark-mode .theme-toggle .fa-moon {
       color: #cbd5e1;
     }
+
     .theme-toggle .fa-sun {
       color: #f59e0b;
       display: none;
     }
+
     .dark-mode .theme-toggle .fa-sun {
       display: block;
     }
+
     .dark-mode .theme-toggle .fa-moon {
       display: none;
     }
+
     /* Table styles for dark mode */
     .dark-mode thead.bg-blue-700 {
       background-color: #1d4ed8;
     }
+
     .dark-mode tbody tr:hover {
       background-color: #334155;
     }
+
     .dark-mode table input[type="checkbox"] {
       background-color: #334155;
       border-color: #64748b;
     }
+
     .dark-mode table input[type="checkbox"]:checked {
       background-color: #3b82f6;
       border-color: #3b82f6;
     }
+
     .dark-mode .text-blue-800 {
       color: #93c5fd;
     }
+
     .dark-mode .text-gray-500 {
       color: #94a3b8;
     }
+
     .dark-mode .text-gray-700 {
       color: #cbd5e1;
     }
+
     .dark-mode .border-b {
       border-color: #334155;
     }
+
     .dark-mode .border-t {
       border-color: #334155;
     }
+
     .dark-mode .border {
       border-color: #334155;
     }
+
     .dark-mode input,
     .dark-mode textarea,
     .dark-mode select {
@@ -470,6 +559,7 @@
       </div>
     </div>
   </div>
+
   <div id="noteModal" class="modal">
     <div class="modal-content">
       <div class="p-6 border-b flex justify-between items-center">
@@ -504,6 +594,7 @@
       </div>
     </div>
   </div>
+
   <div id="alertsModal" class="modal">
     <div class="modal-content">
       <div class="p-6 border-b flex justify-between items-center">
@@ -519,6 +610,7 @@
       </div>
     </div>
   </div>
+
   <div id="searchModal" class="modal">
     <div class="modal-content">
       <div class="p-6 border-b flex justify-between items-center">
@@ -545,12 +637,14 @@
       </div>
     </div>
   </div>
+
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
     <div class="flex flex-col sm:flex-row items-center justify-between mb-6">
       <h1 class="text-2xl sm:text-3xl font-bold text-blue-800 flex items-center gap-2 mb-4 sm:mb-0">
         <i class="fas fa-home"></i> CRM Dashboard
       </h1>
       <div class="flex items-center gap-2">
+        <!-- Dark mode toggle button -->
         <button id="themeToggle" class="theme-toggle">
           <i class="fas fa-moon"></i>
           <i class="fas fa-sun"></i>
@@ -567,6 +661,7 @@
         </button>
       </div>
     </div>
+
     <div class="filter-container card">
       <div class="flex items-center justify-between">
         <h3 class="font-semibold text-gray-700 flex items-center gap-2">
@@ -581,8 +676,10 @@
             </div>
       </div>
     </div>
+
     <div id="statusDashboard" class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-4 mb-6 stats-grid">
       </div>
+
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 controls-grid">
       <div class="card p-4 mobile-collapsible">
         <label for="excelFile" class="block text-sm font-medium text-gray-700 mb-1 cursor-pointer">
@@ -616,7 +713,9 @@
         </button>
       </div>
     </div>
+
     <div id="notification" class="hidden p-4 rounded-lg mb-4 shadow-lg"></div>
+
     <div class="desktop-only card overflow-hidden mb-6">
       <div class="overflow-x-auto">
         <table class="w-full text-sm" id="clientTable">
@@ -637,11 +736,13 @@
         </table>
       </div>
     </div>
+
     <div class="mobile-details">
       <div class="card overflow-hidden" id="mobileClientList">
         </div>
     </div>
   </div>
+
   <div class="mobile-action-bar">
       <button onclick="resetFilters()" class="mobile-action-button active">
         <i class="fas fa-home"></i>
@@ -661,7 +762,10 @@
         <span>Alerts</span>
       </button>
   </div>
+
+
   <audio id="alertSound" src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg" preload="auto"></audio>
+
 <script>
     // ##################################################################
     // #                       CRM Application Logic                    #
@@ -669,7 +773,6 @@
 
     // --- UTILITY FUNCTIONS ---
     const getEl = (id) => document.getElementById(id);
-
     const formatDateTime = (isoString) => {
         if (!isoString) return 'N/A';
         try {
@@ -682,29 +785,6 @@
             return 'Invalid Date';
         }
     };
-
-    // NEW FUNCTION to show visual notifications
-    function showNotification(message, type = 'success') {
-        const notification = getEl('notification');
-        notification.textContent = message;
-
-        notification.className = 'p-4 rounded-lg mb-4 shadow-lg';
-
-        if (type === 'success') {
-            notification.classList.add('bg-green-100', 'border', 'border-green-400', 'text-green-700');
-        } else if (type === 'danger') {
-            notification.classList.add('bg-red-100', 'border', 'border-red-400', 'text-red-700');
-        } else if (type === 'warning') {
-            notification.classList.add('bg-yellow-100', 'border', 'border-yellow-400', 'text-yellow-700');
-        }
-
-        notification.classList.remove('hidden');
-
-        setTimeout(() => {
-            notification.classList.add('hidden');
-        }, 5000);
-    }
-
 
     // --- DOM Elements ---
     const tableBody = getEl('tableBody');
@@ -740,7 +820,7 @@
     let activeStatusFilter = 'all';
     let activeSourceFilters = [];
     let confirmationCallback = null;
-    let sessionAlertedIds = new Set(); // Prevents repeat alerts for the same follow-up
+    let sessionAlertedIds = new Set();
 
     // --- STATUS DEFINITIONS ---
     const statuses = [
@@ -761,12 +841,7 @@
         populateStatusDropdown();
         setupEventListeners();
         applyFiltersAndRender();
-
-        // ** CORE ALERTING LOGIC **
-        // This interval checks for due follow-ups every 15 seconds
         setInterval(checkImmediateFollowUps, 15000);
-
-        // This interval updates the upcoming follow-up badge count every minute
         setInterval(() => monitorFollowUps(false), 60000);
 
         // Initialize dark mode based on saved preference
@@ -783,8 +858,7 @@
         if (masterData.length === 0) {
              masterData = [
                 {id:1, name:"John Smith", contact:"9876543210", status:"Interested", followupDate:"2025-07-20T10:00:00", visited:true, note:"Interested in 3BHK", sourceFile:"SampleData.xlsx"},
-                // This client's follow-up is set for 5 minutes from now, for easy testing
-                {id:2, name:"Sarah O'Brien", contact:"9876543211", status:"Hot", followupDate: new Date(Date.now() + 5 * 60 * 1000).toISOString().slice(0, 16), visited:true, note:"Wants to visit this weekend", sourceFile:"SampleData.xlsx"},
+                {id:2, name:"Sarah O'Brien", contact:"9876543211", status:"Hot", followupDate: new Date(Date.now() + 300000).toISOString().slice(0, 16), visited:true, note:"Wants to visit this weekend", sourceFile:"SampleData.xlsx"},
                 {id:3, name:"Michael Brown", contact:"9876543212", status:"Warm", followupDate:"", visited:false, note:"Considering between 2 projects", sourceFile:"Leads_June.xlsx"}
              ];
              saveData();
@@ -795,64 +869,28 @@
         localStorage.setItem('crmData', JSON.stringify(masterData));
     }
 
-    // --- NEW FUNCTION: HANDLES SOUND AND VIBRATION ---
-    function checkImmediateFollowUps() {
-        const now = new Date();
-        const alertWindow = 15 * 1000; // 15-second window to catch alerts
-
-        const dueFollowups = masterData.filter(client => {
-            if (!client.followupDate || sessionAlertedIds.has(client.id)) {
-                return false;
-            }
-            const followupTime = new Date(client.followupDate);
-            // Check if the followup time is within the last 15 seconds and has not been alerted
-            return followupTime <= now && now - followupTime < alertWindow;
-        });
-
-        if (dueFollowups.length > 0) {
-            // 1. Play the sound
-            alertSound.play();
-
-            // 2. Vibrate the device (if supported)
-            if ('vibrate' in navigator) {
-                // Vibrate for 200ms, pause for 100ms, then vibrate for another 200ms
-                navigator.vibrate([200, 100, 200]);
-            }
-
-            dueFollowups.forEach(client => {
-                console.log(`Alerting for: ${client.name}`);
-                sessionAlertedIds.add(client.id); // Mark as alerted for this session
-
-                const clientRow = document.querySelector(`tr[data-id='${client.id}']`);
-                if (clientRow) {
-                    clientRow.classList.add('highlight');
-                }
-
-                showNotification(`Follow-up due for ${client.name}!`, 'danger');
-            });
-
-            monitorFollowUps(false); // Refresh alert counts
-        }
-    }
-
-
-    // --- RENDERING & UI ---
+    // --- RENDERING ---
     function applyFiltersAndRender() {
         const searchTerm = searchBox.value.toLowerCase();
         let filtered = searchTerm
             ? masterData.filter(c => c.name.toLowerCase().includes(searchTerm) || c.contact.toLowerCase().includes(searchTerm))
             : [...masterData];
+
         if (activeStatusFilter !== 'all') {
             filtered = filtered.filter(c => c.status.toLowerCase().replace(/ /g, '-') === activeStatusFilter);
         }
+
         if (activeSourceFilters.length > 0) {
             filtered = filtered.filter(c => activeSourceFilters.includes(c.sourceFile || 'Manual'));
         }
+
         const dateValue = filterDate.value;
         if(dateValue) {
             filtered = filtered.filter(c => c.followupDate && c.followupDate.startsWith(dateValue));
         }
+
         displayedData = filtered.sort((a,b) => (b.id - a.id));
+
         renderDesktopTable();
         renderMobileCards();
         updateDashboardCounts();
@@ -878,8 +916,11 @@
     }
 
     function renderDesktopTable() {
-        const tbody = getEl('tableBody');
+        const table = getEl('clientTable');
+        if (!table) return;
+        const tbody = table.querySelector('tbody');
         if (displayedData.length === 0) {
+            // ============== COLSPAN UPDATED FROM 8 to 9 ===============
             tbody.innerHTML = `<tr><td colspan="9" class="py-10 text-center text-gray-500">No clients match the current filters.</td></tr>`;
             return;
         }
@@ -913,120 +954,158 @@
             return;
         }
         mobileClientList.innerHTML = displayedData.map(client => `
-            <div class="mobile-row" data-id="${client.id}">
-                <div class="mobile-row-header">
-                    <span class="font-bold">${client.name}</span>
-                    <span class="status-badge ${getStatusClass(client.status)}">${client.status}</span>
-                </div>
-                <div class="mobile-row-content">
-                    <div class="mobile-row-item">
-                        <span class="mobile-row-label">Contact</span>
-                        <span class="mobile-row-value">${client.contact}</span>
-                    </div>
-                    <div class="mobile-row-item">
-                        <span class="mobile-row-label">Follow-up</span>
-                        <span class="mobile-row-value">${formatDateTime(client.followupDate)}</span>
-                    </div>
-                </div>
-                 <div class="mobile-note mt-2">
-                    <p class="text-xs text-gray-600">${client.note || 'No notes available.'}</p>
-                </div>
-                <div class="mobile-actions mt-4">
-                    <button class="btn btn-sm text-blue-600" onclick="callClient('${client.contact}')"><i class="fas fa-phone mr-2"></i>Call</button>
-                    <button class="btn btn-sm text-green-500" onclick="whatsappClient('${client.contact}')"><i class="fab fa-whatsapp mr-2"></i>WhatsApp</button>
-                    <button class="btn btn-sm text-purple-500" onclick="openNoteModal(${client.id})"><i class="fas fa-edit mr-2"></i>Edit</button>
-                    <button class="btn btn-sm text-red-500" onclick="deleteClient(${client.id})"><i class="fas fa-trash-alt mr-2"></i>Delete</button>
-                </div>
+          <div class="mobile-row" data-id="${client.id}">
+            <div class="mobile-row-header">
+              <div class="font-bold">${client.name}</div>
+              <span class="status-badge ${getStatusClass(client.status)}">${client.status}</span>
+            </div>
+            <div class="mobile-row-content">
+              <div class="mobile-row-item"><span class="mobile-row-label">Contact</span><span class="mobile-row-value">${client.contact}</span></div>
+              <div class="mobile-row-item"><span class="mobile-row-label">Follow-up</span><span class="mobile-row-value">${formatDateTime(client.followupDate)}</span></div>
+              <div class="mobile-row-item"><span class="mobile-row-label">Visited</span><span class="mobile-row-value"><input type="checkbox" ${client.visited ? 'checked' : ''} onchange="toggleVisited(${client.id}, this.checked)"></span></div>
+              <div class="mobile-row-item"><span class="mobile-row-label">Source</span><span class="mobile-row-value">${client.sourceFile || 'Manual'}</span></div>
+              <div class="mobile-note"><button class="note-button w-full justify-center" onclick="openNoteModal(${client.id})"><i class="fas fa-comment"></i><span>View/Edit Details</span></button></div>
+            </div>
+            <div class="mobile-actions">
+              <button class="bg-blue-100 text-blue-700 py-2 px-3 rounded flex items-center gap-2 justify-center" onclick="callClient('${client.contact}')"><i class="fas fa-phone"></i> Call</button>
+              <button class="bg-green-100 text-green-700 py-2 px-3 rounded flex items-center gap-2 justify-center" onclick="whatsappClient('${client.contact}')"><i class="fab fa-whatsapp"></i> WhatsApp</button>
+              <button class="bg-gray-200 text-gray-800 py-2 px-3 rounded flex items-center gap-2 justify-center" onclick="openSearchModal('${client.name.replace(/'/g, "\\'")}', '${client.contact}')"><i class="fas fa-search"></i> Search</button>
+              <button class="bg-red-100 text-red-700 py-2 px-3 rounded flex items-center gap-2 justify-center" onclick="deleteClient(${client.id})"><i class="fas fa-trash-alt"></i> Delete</button>
+            </div>
+          </div>
+        `).join('');
+    }
+
+    function updateDashboardCounts() {
+        const counts = masterData.reduce((acc, client) => {
+            const statusKey = client.status.toLowerCase().replace(/ /g, '-');
+            acc[statusKey] = (acc[statusKey] || 0) + 1;
+            return acc;
+        }, {});
+        getEl('count-all').textContent = masterData.length;
+        statuses.forEach(status => {
+            const statusKey = status.toLowerCase().replace(/ /g, '-');
+            getEl(`count-${statusKey}`).textContent = counts[statusKey] || 0;
+        });
+    }
+
+    function updateSourceFilterList() {
+        const sources = [...new Set(masterData.map(c => c.sourceFile || 'Manual'))];
+        sourceList.innerHTML = `<div class="source-file-item ${activeSourceFilters.length === 0 ? 'active' : ''}" onclick="toggleSourceFilter('all')">All Sources</div>` +
+        sources.map(source => `
+            <div class="source-file-item ${activeSourceFilters.includes(source) ? 'active' : ''}" onclick="toggleSourceFilter('${source}')">
+                ${source}
             </div>
         `).join('');
     }
 
-    // The rest of your original functions remain here, unchanged.
-    // ... (This would include setupEventListeners, updateDashboardCounts, all modal functions, etc.)
-    // For brevity, I will add the key functions. You should ensure all your other JS functions are still present.
-
+    function renderAlertsFeed(alerts) {
+        if (alerts.length === 0) {
+            alertsFeed.innerHTML = `<p class="text-gray-500 text-center">No upcoming follow-ups in the next hour.</p>`;
+            return;
+        }
+        alerts.sort((a,b) => new Date(a.followupDate) - new Date(b.followupDate));
+        alertsFeed.innerHTML = alerts.map(client => `
+            <div class="p-3 rounded-lg flex justify-between items-center bg-blue-50 border border-blue-200">
+                <div>
+                    <div class="font-bold text-gray-800">${client.name}</div>
+                    <div class="text-sm text-blue-600">${formatDateTime(client.followupDate)}</div>
+                </div>
+                <button class="text-purple-500 hover:text-purple-700 text-lg" title="View Details" onclick="openNoteModal(${client.id})"><i class="fas fa-eye"></i></button>
+            </div>
+        `).join('');
+    }
+    // --- EVENT LISTENERS & ACTIONS ---
     function setupEventListeners() {
-      searchBox.addEventListener('input', applyFiltersAndRender);
-      excelFile.addEventListener('change', handleFileUpload);
-      clearStorageBtn.addEventListener('click', () => {
-        showConfirmation('Are you sure you want to delete ALL data? This cannot be undone.', () => {
-          localStorage.removeItem('crmData');
-          masterData = [];
-          sessionAlertedIds.clear();
-          applyFiltersAndRender();
-          showNotification('All data has been cleared.', 'danger');
-        });
-      });
-
-      toggleSourceList.addEventListener('click', () => {
-        getEl('sourceListContainer').classList.toggle('hidden');
-        toggleSourceList.querySelector('i').classList.toggle('fa-chevron-down');
-        toggleSourceList.querySelector('i').classList.toggle('fa-chevron-up');
-      });
-
-      statusDashboard.addEventListener('click', (e) => {
-          const tile = e.target.closest('.status-tile');
-          if (tile) {
-              document.querySelectorAll('.status-tile').forEach(t => t.classList.remove('active'));
-              tile.classList.add('active');
-              activeStatusFilter = tile.dataset.status;
-              applyFiltersAndRender();
-          }
-      });
-
-      themeToggle.addEventListener('click', () => {
-          document.body.classList.toggle('dark-mode');
-          const isDarkMode = document.body.classList.contains('dark-mode');
-          localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
-      });
-
-      filterDate.addEventListener('change', applyFiltersAndRender);
-    }
-
-    function monitorFollowUps(showModal) {
-        const now = new Date();
-        const upcomingFollowups = masterData.filter(c => {
-            if (!c.followupDate) return false;
-            const followupTime = new Date(c.followupDate);
-            return followupTime > now;
+        clearStorageBtn.addEventListener('click', () => {
+             openConfirmation('Are you sure you want to clear all CRM data? This will permanently delete all records.', () => {
+                masterData = [];
+                saveData();
+                resetFilters();
+                showNotification('All data has been cleared.', 'success');
+             });
         });
 
-        const badge = getEl('notificationBadge');
-        if (upcomingFollowups.length > 0) {
-            badge.textContent = upcomingFollowups.length;
-            badge.classList.remove('hidden');
-        } else {
-            badge.classList.add('hidden');
-        }
+        confirmAction.addEventListener('click', () => {
+            if (confirmationCallback) confirmationCallback();
+            closeConfirmationModal();
+        });
+        cancelAction.addEventListener('click', closeConfirmationModal);
+        excelFile.addEventListener('change', handleExcelUpload);
+        searchBox.addEventListener('input', applyFiltersAndRender);
+        filterDate.addEventListener('change', applyFiltersAndRender);
 
-        if (showModal) {
-            alertsFeed.innerHTML = upcomingFollowups.length > 0 ?
-              upcomingFollowups
-                .sort((a,b) => new Date(a.followupDate) - new Date(b.followupDate))
-                .map(c => `<div class="p-3 rounded-lg border flex justify-between items-center"><div><strong>${c.name}</strong><br><small>${formatDateTime(c.followupDate)}</small></div><button class="btn btn-sm" onclick="openNoteModal(${c.id});closeAlertsModal();">View</button></div>`).join('')
-              : '<p>No upcoming follow-ups scheduled.</p>';
-            alertsModal.style.display = 'flex';
+        toggleSourceList.addEventListener('click', () => {
+            getEl('sourceListContainer').classList.toggle('hidden');
+            const icon = toggleSourceList.querySelector('i');
+            icon.classList.toggle('fa-chevron-down');
+            icon.classList.toggle('fa-chevron-up');
+        });
+
+        statusDashboard.addEventListener('click', (e) => {
+            const tile = e.target.closest('.status-tile');
+            if (!tile) return;
+
+            document.querySelectorAll('.status-tile').forEach(t => t.classList.remove('active'));
+            tile.classList.add('active');
+
+            activeStatusFilter = tile.dataset.status;
+            applyFiltersAndRender();
+        });
+
+        // Add event listener for theme toggle
+        themeToggle.addEventListener('click', toggleDarkMode);
+    }
+
+    function openSearchModal(name, contact) {
+        getEl('searchClientName').textContent = name;
+        const encodedName = encodeURIComponent(name);
+        const encodedContact = encodeURIComponent(contact);
+        getEl('searchGoogleName').href = `https://www.google.com/search?q=${encodedName}`;
+        getEl('searchFacebook').href = `https://www.facebook.com/search/top/?q=${encodedName}`;
+        getEl('searchInstagram').href = `https://www.instagram.com/explore/tags/${encodedName.replace(/\s+/g, '').toLowerCase()}/`;
+        getEl('searchLinkedin').href = `https://www.linkedin.com/search/results/all/?keywords=${encodedName}`;
+        getEl('searchGoogleNumber').href = `https://www.google.com/search?q=${encodedContact}`;
+        getEl('searchModal').style.display = 'flex';
+    }
+
+    function closeSearchModal() {
+        getEl('searchModal').style.display = 'none';
+    }
+
+    function callClient(contact) { window.location.href = `tel:${contact}`; }
+    function whatsappClient(contact) { window.open(`https://wa.me/91${contact.replace(/\D/g, '')}`, '_blank'); }
+    function toggleVisited(id, isChecked) {
+        const client = masterData.find(c => c.id === id);
+        if (client) {
+            client.visited = isChecked;
+            saveData();
         }
     }
 
-    // Make sure all your other functions like closeAlertsModal, openNoteModal, saveNote, deleteClient, etc. are included below.
-    // For demonstration, here are a few key ones.
-
-    function closeAlertsModal() {
-        alertsModal.style.display = 'none';
+    // --- CORE FUNCTIONALITY ---
+    function openConfirmation(message, callback) {
+        confirmationMessage.textContent = message;
+        confirmationCallback = callback;
+        confirmationModal.style.display = 'flex';
+    }
+    function closeConfirmationModal() {
+        confirmationModal.style.display = 'none';
+        confirmationCallback = null;
     }
 
     function openNoteModal(id) {
-        currentEditingId = id;
         const client = masterData.find(c => c.id === id);
-        if (client) {
-            noteClientName.value = client.name;
-            noteClientContact.value = client.contact;
-            noteClientStatus.value = client.status;
-            noteFollowUp.value = client.followupDate ? client.followupDate.slice(0, 16) : '';
-            noteText.value = client.note || '';
-            noteModal.style.display = 'flex';
-        }
+        if (!client) return;
+
+        currentEditingId = id;
+        noteClientName.value = client.name;
+        noteClientContact.value = client.contact;
+        noteClientStatus.value = client.status;
+        noteFollowUp.value = client.followupDate ? client.followupDate.slice(0, 16) : '';
+        noteText.value = client.note || '';
+
+        noteModal.style.display = 'flex';
     }
 
     function closeNoteModal() {
@@ -1036,30 +1115,52 @@
 
     function saveNote() {
         if (currentEditingId === null) return;
-        const clientIndex = masterData.findIndex(c => c.id === currentEditingId);
-        if (clientIndex > -1) {
-            masterData[clientIndex].name = noteClientName.value;
-            masterData[clientIndex].contact = noteClientContact.value;
-            masterData[clientIndex].status = noteClientStatus.value;
-            masterData[clientIndex].followupDate = noteFollowUp.value;
-            masterData[clientIndex].note = noteText.value;
-
-            // Important: If a follow-up is edited, remove it from the alerted list
-            // so it can trigger a new alert if it's still due.
-            sessionAlertedIds.delete(currentEditingId);
-
+        const client = masterData.find(c => c.id === currentEditingId);
+        if(client) {
+            client.name = noteClientName.value.trim();
+            client.contact = noteClientContact.value.trim();
+            client.status = noteClientStatus.value;
+            client.followupDate = noteFollowUp.value;
+            client.note = noteText.value.trim();
             saveData();
             applyFiltersAndRender();
-            showNotification('Client details updated successfully!', 'success');
+            highlightRow(client.id);
+            closeNoteModal();
         }
-        closeNoteModal();
+    }
+
+    // =================================================================
+    // ============ NEW DELETE CLIENT FUNCTION ADDED HERE ==============
+    // =================================================================
+    function deleteClient(id) {
+        const clientToDelete = masterData.find(c => c.id === id);
+        if (!clientToDelete) {
+            console.error("Client not found for deletion.");
+            return;
+        }
+
+        const message = `Are you sure you want to delete the record for "${clientToDelete.name}"? This action cannot be undone.`;
+
+        openConfirmation(message, () => {
+            // Filter out the client with the matching id
+            masterData = masterData.filter(c => c.id !== id);
+            saveData();
+            applyFiltersAndRender();
+            showNotification(`Client "${clientToDelete.name}" was successfully deleted.`, 'success');
+        });
     }
 
     function addNewLead() {
         const newId = masterData.length > 0 ? Math.max(...masterData.map(c => c.id)) + 1 : 1;
         const newClient = {
-            id: newId, name: "New Lead", contact: "", status: "Cold",
-            followupDate: "", visited: false, note: "", sourceFile: "Manual"
+            id: newId,
+            name: "New Lead",
+            contact: "",
+            status: "Cold",
+            followupDate: "",
+            visited: false,
+            note: "",
+            sourceFile: "Manual"
         };
         masterData.push(newClient);
         saveData();
@@ -1067,36 +1168,196 @@
         openNoteModal(newId);
     }
 
-    function deleteClient(id) {
-        showConfirmation('Are you sure you want to delete this client?', () => {
-            masterData = masterData.filter(c => c.id !== id);
-            saveData();
-            applyFiltersAndRender();
-            showNotification('Client deleted.', 'danger');
+    function resetFilters() {
+        searchBox.value = '';
+        activeStatusFilter = 'all';
+        activeSourceFilters = [];
+        filterDate.value = '';
+        document.querySelectorAll('.status-tile').forEach(t => t.classList.remove('active'));
+        getEl('tile-all').classList.add('active');
+        applyFiltersAndRender();
+    }
+
+    function highlightRow(id) {
+        document.querySelectorAll(`[data-id='${id}']`).forEach(el => {
+            el.classList.add('highlight');
+            setTimeout(() => el.classList.remove('highlight'), 2000);
         });
     }
 
-    function showConfirmation(message, callback) {
-      confirmationMessage.textContent = message;
-      confirmationCallback = callback;
-      confirmationModal.style.display = 'flex';
+    function handleExcelUpload(event) {
+        const file = event.target.files[0];
+        if (!file) return;
 
-      cancelAction.onclick = () => {
-        confirmationModal.style.display = 'none';
-        confirmationCallback = null;
-      };
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, {type: 'array'});
+                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
 
-      confirmAction.onclick = () => {
-        if (confirmationCallback) {
-          confirmationCallback();
-        }
-        confirmationModal.style.display = 'none';
-        confirmationCallback = null;
-      };
+                if (jsonData.length < 2) {
+                    showNotification('Excel file is empty or has no data rows.', 'error');
+                    return;
+                }
+
+                const headers = jsonData[0].map(h => h.toString().toLowerCase().trim());
+                const nameIndex = headers.indexOf('name');
+                const contactIndex = headers.indexOf('contact');
+
+                if (nameIndex === -1 || contactIndex === -1) {
+                    showNotification("Excel must contain 'name' and 'contact' columns.", 'error');
+                    return;
+                }
+
+                const newClients = jsonData.slice(1).map((row, index) => {
+                    const name = row[nameIndex] ? row[nameIndex].toString().trim() : '';
+                    const contact = row[contactIndex] ? row[contactIndex].toString().trim() : '';
+                    if (!name || !contact) return null;
+
+                    const existingClient = masterData.find(c => c.contact === contact);
+                    if(existingClient) return null;
+
+                    const newId = (masterData.length > 0 ? Math.max(...masterData.map(c => c.id)) : 0) + index + 1;
+                    return {
+                        id: newId,
+                        name: name,
+                        contact: contact,
+                        status: 'Cold',
+                        followupDate: '',
+                        visited: false,
+                        note: '',
+                        sourceFile: file.name
+                    };
+                }).filter(Boolean);
+
+                if(newClients.length > 0) {
+                    masterData = masterData.concat(newClients);
+                    saveData();
+                    applyFiltersAndRender();
+                    showNotification(`${newClients.length} new clients imported successfully.`, 'success');
+                } else {
+                    showNotification('No new clients to import. They may already exist.', 'warning');
+                }
+
+            } catch (error) {
+                console.error("Error processing Excel file:", error);
+                showNotification("Failed to process Excel file. It might be corrupted.", 'error');
+            } finally {
+                event.target.value = '';
+            }
+        };
+        reader.readAsArrayBuffer(file);
     }
 
-    // And so on for all your other functions...
-    // (e.g., handleFileUpload, exportToExcel, updateDashboardCounts, etc.)
+    function showNotification(message, type = 'info') {
+        const colors = {
+            info: 'bg-blue-100 text-blue-800',
+            success: 'bg-green-100 text-green-800',
+            warning: 'bg-yellow-100 text-yellow-800',
+            error: 'bg-red-100 text-red-800'
+        };
+        notification.className = `p-4 rounded-lg mb-4 shadow-lg ${colors[type]}`;
+        notification.textContent = message;
+        notification.style.display = 'block';
+        setTimeout(() => { notification.style.display = 'none'; }, 5000);
+    }
+
+    function toggleSourceFilter(source) {
+        if (source === 'all') {
+            activeSourceFilters = [];
+        } else {
+            const index = activeSourceFilters.indexOf(source);
+            if (index > -1) {
+                activeSourceFilters.splice(index, 1);
+            } else {
+                activeSourceFilters.push(source);
+            }
+        }
+        applyFiltersAndRender();
+    }
+
+    function checkImmediateFollowUps() {
+        const now = new Date();
+        const upcoming = masterData.filter(client => {
+            if (!client.followupDate || sessionAlertedIds.has(client.id)) return false;
+            const followUpTime = new Date(client.followupDate);
+            return followUpTime <= now;
+        });
+
+        if (upcoming.length > 0) {
+            const client = upcoming[0];
+            sessionAlertedIds.add(client.id);
+            showNotification(`Follow-up required for ${client.name}!`, 'warning');
+
+
+            /* For Adding Play sound*/
+            alertSound.play().catch(e => console.log("Audio playback failed. User interaction needed."));
+            highlightRow(client.id);
+        }
+    }
+
+    function monitorFollowUps(showAlertsModalOnClick = false) {
+        const now = new Date();
+        const oneHourLater = new Date(now.getTime() + 60 * 60 * 1000);
+
+        const upcomingAlerts = masterData.filter(c => {
+            if (!c.followupDate) return false;
+            const followUpTime = new Date(c.followupDate);
+            return followUpTime >= now && followUpTime <= oneHourLater;
+        });
+
+        if (upcomingAlerts.length > 0) {
+            notificationBadge.textContent = upcomingAlerts.length;
+            notificationBadge.classList.remove('hidden');
+        } else {
+            notificationBadge.classList.add('hidden');
+        }
+
+        if (showAlertsModalOnClick) {
+            renderAlertsFeed(upcomingAlerts);
+            alertsModal.style.display = 'flex';
+        }
+    }
+
+    function closeAlertsModal() {
+        alertsModal.style.display = 'none';
+    }
+
+    function exportToExcel() {
+        if (displayedData.length === 0) {
+            showNotification("No data available to export.", "warning");
+            return;
+        }
+        const dataToExport = displayedData.map(c => ({
+            Name: c.name,
+            Contact: c.contact,
+            Status: c.status,
+            'Follow-up Date': formatDateTime(c.followupDate),
+            Visited: c.visited ? 'Yes' : 'No',
+            Notes: c.note,
+            Source: c.sourceFile
+        }));
+
+        const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Clients");
+
+        const colWidths = Object.keys(dataToExport[0]).map(key => ({
+            wch: Math.max(...dataToExport.map(row => row[key] ? row[key].toString().length : 0), key.length)
+        }));
+        worksheet["!cols"] = colWidths;
+
+        XLSX.writeFile(workbook, "CRM_Export.xlsx");
+    }
+
+    // Dark Mode Toggle Functionality
+    function toggleDarkMode() {
+        document.body.classList.toggle('dark-mode');
+        const isDarkMode = document.body.classList.contains('dark-mode');
+        localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+    }
 
 </script>
 </body>
