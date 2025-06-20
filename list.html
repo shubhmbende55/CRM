@@ -1,0 +1,1709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Real-time Property Finder</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f0f4f8;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    main {
+      flex-grow: 1;
+      padding-bottom: 80px; /* Space for sticky footer */
+    }
+    .property-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+    .property-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+    .property-card-icon-container {
+        width: 100%;
+        height: 200px;
+        background-color: #e0f2fe; /* blue-50 */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    .property-card-icon-container .fa-solid {
+        font-size: 5rem; /* Larger icon */
+        color: #3b82f6; /* blue-500 */
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: #334155; /* slate-700 */
+    }
+    .form-group select,
+    .form-group input[type="text"],
+    .form-group input[type="number"],
+    .form-group input[type="search"],
+    .form-group textarea { /* Added textarea */
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #cbd5e1; /* slate-300 */
+        border-radius: 0.5rem;
+        font-size: 1rem;
+        color: #1e293b; /* slate-900 */
+        background-color: #ffffff;
+    }
+    .form-group input[type="range"] {
+        width: 100%;
+        -webkit-appearance: none;
+        height: 8px;
+        background: #e2e8f0; /* slate-200 */
+        border-radius: 5px;
+        outline: none;
+        opacity: 0.7;
+        transition: opacity .2s;
+    }
+    .form-group input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #2563eb; /* blue-600 */
+        cursor: pointer;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.3);
+    }
+    .form-group input[type="range"]::-moz-range-thumb {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #2563eb; /* blue-600 */
+        cursor: pointer;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.3);
+    }
+    .radio-group, .checkbox-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+    .radio-group label, .checkbox-group label {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        border: 1px solid #cbd5e1;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        background-color: #ffffff;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+    .radio-group input[type="radio"], .checkbox-group input[type="checkbox"] {
+        display: none;
+    }
+    .radio-group input[type="radio"]:checked + label,
+    .checkbox-group input[type="checkbox"]:checked + label {
+        background-color: #2563eb; /* blue-600 */
+        color: white;
+        border-color: #2563eb;
+        box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+    }
+
+    /* Accordion styles */
+    .accordion-header {
+        background-color: #f8fafc; /* slate-50 */
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid #e2e8f0; /* slate-200 */
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: 600;
+        color: #1e293b; /* slate-900 */
+        border-radius: 0.75rem 0.75rem 0 0; /* Only top corners rounded */
+    }
+    .accordion-item:last-child .accordion-header {
+      border-radius: 0 0 0.75rem 0.75rem; /* bottom corners for last header */
+      border-bottom: none;
+    }
+    .accordion-item.active .accordion-header {
+        border-bottom: 1px solid #e2e8f0; /* slate-200 */
+        border-radius: 0.75rem 0.75rem 0 0;
+    }
+    .accordion-content {
+        padding: 1.5rem;
+        background-color: white;
+        border-bottom: 1px solid #e2e8f0;
+        display: none; /* Hidden by default */
+        overflow: hidden;
+        transition: max-height 0.3s ease-out; /* Smooth transition */
+        max-height: 0; /* Start collapsed */
+    }
+    .accordion-item.active .accordion-content {
+        max-height: 500px; /* Adjust as needed, should be larger than content */
+        display: block; /* Show when active */
+    }
+    .accordion-item:last-child .accordion-content {
+      border-bottom: none; /* No bottom border for the last content */
+      border-radius: 0 0 0.75rem 0.75rem; /* Only bottom corners rounded */
+    }
+    .accordion-item .accordion-header .fas.fa-chevron-down {
+      transform: rotate(0deg);
+      transition: transform 0.3s ease;
+    }
+    .accordion-item.active .accordion-header .fas.fa-chevron-down {
+      transform: rotate(180deg);
+    }
+
+    /* Selected filters chips */
+    .filter-chip {
+        display: inline-flex;
+        align-items: center;
+        background-color: #e0f2fe; /* blue-50 */
+        color: #2563eb; /* blue-600 */
+        padding: 0.4rem 0.8rem;
+        border-radius: 9999px; /* pill shape */
+        font-size: 0.875rem;
+        font-weight: 500;
+        margin-right: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+    .filter-chip .remove-btn {
+        margin-left: 0.5rem;
+        cursor: pointer;
+        color: #3b82f6; /* blue-500 */
+    }
+
+    /* Mobile specific UI for filters - makes them full width and stack */
+    @media (max-width: 767px) {
+      .radio-group label, .checkbox-group label {
+        width: calc(50% - 0.375rem); /* Two items per row with gap */
+        justify-content: center;
+        text-align: center;
+      }
+      .radio-group label.full-width, .checkbox-group label.full-width {
+        width: 100%; /* For single options that should take full width */
+      }
+      .form-group input[type="text"],
+      .form-group input[type="search"] {
+        padding: 1rem; /* Larger touch targets */
+      }
+      .filter-section {
+        margin-bottom: 1rem;
+      }
+    }
+
+    /* Loading Spinner */
+    .loading-spinner {
+      border: 4px solid rgba(0, 0, 0, 0.1);
+      border-top: 4px solid #3b82f6; /* Blue */
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Modal Styles */
+    .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+    .modal.show {
+        opacity: 1;
+        visibility: visible;
+    }
+    .modal-content {
+        background-color: white;
+        padding: 2rem;
+        border-radius: 0.75rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        max-width: 90%;
+        max-height: 90%;
+        overflow-y: auto;
+        position: relative;
+        transform: translateY(20px);
+        transition: transform 0.3s ease;
+    }
+    .modal.show .modal-content {
+        transform: translateY(0);
+    }
+    .modal-close-btn {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: #64748b; /* slate-500 */
+    }
+    .modal-form label {
+        margin-bottom: 0.25rem; /* Tighter spacing in modal */
+    }
+
+    /* NEW: Description Feed Modal */
+    #descriptionModal .modal-content {
+      max-width: 800px;
+      padding: 2rem;
+    }
+    .description-feed-container {
+      max-height: 70vh;
+      overflow-y: auto;
+      padding-right: 10px;
+    }
+    .description-section {
+      margin-bottom: 1.5rem;
+    }
+    .description-section h4 {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: #1e293b;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .description-section p {
+      color: #64748b;
+      line-height: 1.6;
+    }
+    .map-container {
+      height: 250px;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-top: 0.5rem;
+      background-color: #e0f2fe;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .media-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 1rem;
+      margin-top: 0.5rem;
+    }
+    .media-item {
+      height: 120px;
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #f1f5f9;
+      position: relative;
+    }
+    .media-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .media-item i {
+      font-size: 2.5rem;
+      color: #94a3b8;
+    }
+    .brochure-item {
+      display: flex;
+      align-items: center;
+      padding: 0.75rem;
+      background-color: #f1f5f9;
+      border-radius: 8px;
+      margin-bottom: 0.5rem;
+    }
+    .brochure-item i {
+      color: #ef4444;
+      margin-right: 0.75rem;
+      font-size: 1.25rem;
+    }
+    .brochure-item a {
+      color: #1e40af;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .brochure-item a:hover {
+      text-decoration: underline;
+    }
+    .toggle-description-btn {
+      position: absolute;
+      bottom: 1rem;
+      right: 1rem;
+      background: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 9999px;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      z-index: 10;
+    }
+    .toggle-description-btn i {
+      transition: transform 0.3s ease;
+    }
+    .description-feed-container.expanded .toggle-description-btn i {
+      transform: rotate(180deg);
+    }
+    .description-feed-container.expanded {
+      max-height: none;
+      height: 80vh;
+    }
+    .description-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .description-header h3 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #1e293b;
+    }
+    .description-location {
+      color: #64748b;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.25rem;
+    }
+
+    /* Mobile adjustments for description modal */
+    @media (max-width: 767px) {
+      #descriptionModal .modal-content {
+        width: 95%;
+        padding: 1.25rem;
+      }
+      .description-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+      }
+      .map-container {
+        height: 200px;
+      }
+      .media-container {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    /* NEW: Toggle for optional fields */
+    .optional-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      padding: 0.75rem 1rem;
+      background-color: #f1f5f9;
+      border-radius: 0.5rem;
+      cursor: pointer;
+    }
+    .optional-toggle span {
+      font-weight: 600;
+      color: #334155;
+    }
+    .optional-fields {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease-out;
+    }
+    .optional-fields.show {
+      max-height: 1000px; /* Adjust as needed */
+    }
+    .optional-toggle i {
+      transition: transform 0.3s ease;
+    }
+    .optional-toggle.active i {
+      transform: rotate(180deg);
+    }
+  </style>
+</head>
+<body class="text-slate-800">
+
+  <header class="bg-white shadow-md sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+      <div class="flex items-center gap-3">
+        <i class="fas fa-building text-2xl text-blue-600"></i>
+        <h1 class="text-xl md:text-2xl font-bold text-slate-800">Property Search</h1>
+      </div>
+      <div class="flex items-center gap-2">
+        <a href="./index.html" class="btn bg-blue-100 text-blue-700 hover:bg-blue-200 p-2 rounded-lg text-sm md:text-base">
+          <i class="fas fa-arrow-left mr-2"></i>CRM
+        </a>
+        <label for="propertyUploader" class="btn bg-green-500 text-white hover:bg-green-600 p-2 rounded-lg cursor-pointer text-sm md:text-base">
+          <i class="fas fa-file-upload mr-2"></i>Upload
+        </label>
+        <input type="file" id="propertyUploader" class="hidden" accept=".xlsx,.xls">
+        <button id="addPropertyBtn" class="btn bg-blue-600 text-white hover:bg-blue-700 p-2 rounded-lg text-sm md:text-base">
+          <i class="fas fa-plus mr-2"></i>Add Property
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8 flex flex-col md:flex-row gap-6">
+
+    <div id="filterSidebar" class="w-full md:w-1/3 lg:w-1/4 bg-white p-4 md:p-6 rounded-xl shadow-lg mb-8 md:mb-0">
+        <h2 class="text-2xl font-bold text-slate-700 mb-6 flex justify-between items-center">
+            Filters
+            <button id="clearAllFiltersBtn" class="text-sm text-blue-600 hover:underline"><i class="fas fa-times-circle mr-1"></i>Clear All</button>
+        </h2>
+
+        <div id="activeFiltersContainer" class="mb-4 flex flex-wrap gap-2">
+            </div>
+
+        <form id="propertySearchForm">
+            <div class="accordion-container space-y-4">
+
+                <div class="accordion-item active">
+                    <div class="accordion-header">
+                        <span>Property Type</span>
+                        <i class="fas fa-chevron-down text-sm transition-transform duration-300"></i>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="radio-group">
+                            <input type="radio" id="typeAll" name="propertyType" value="" checked>
+                            <label for="typeAll">Any</label>
+                            <input type="radio" id="typeApartment" name="propertyType" value="Apartment">
+                            <label for="typeApartment">Apartment</label>
+                            <input type="radio" id="typeVilla" name="propertyType" value="Villa">
+                            <label for="typeVilla">Villa</label>
+                            <input type="radio" id="typeCommercial" name="propertyType" value="Commercial">
+                            <label for="typeCommercial">Commercial</label>
+                            <input type="radio" id="typePenthouse" name="propertyType" value="Penthouse">
+                            <label for="typePenthouse">Penthouse</label>
+                            <input type="radio" id="typeSimplex" name="propertyType" value="Simplex">
+                            <label for="typeSimplex">Simplex</label>
+                            <input type="radio" id="typeDuplex" name="propertyType" value="Duplex">
+                            <label for="typeDuplex">Duplex</label>
+                            <input type="radio" id="typeNAPlot" name="propertyType" value="NA Plot">
+                            <label for="typeNAPlot">NA Plot</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item" id="bhkAccordionItem">
+                    <div class="accordion-header">
+                        <span>BHK Configuration</span>
+                        <i class="fas fa-chevron-down text-sm transition-transform duration-300"></i>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="radio-group">
+                            <input type="radio" id="bhkAll" name="bhkConfig" value="" checked>
+                            <label for="bhkAll">Any</label>
+                            <input type="radio" id="bhk1" name="bhkConfig" value="1 BHK">
+                            <label for="bhk1">1 BHK</label>
+                            <input type="radio" id="bhk2" name="bhkConfig" value="2 BHK">
+                            <label for="bhk2">2 BHK</label>
+                            <input type="radio" id="bhk3" name="bhkConfig" value="3 BHK">
+                            <label for="bhk3">3 BHK</label>
+                            <input type="radio" id="bhk4" name="bhkConfig" value="4 BHK">
+                            <label for="bhk4">4 BHK</label>
+                            <input type="radio" id="bhk4plus" name="bhkConfig" value="4+ BHK">
+                            <label for="bhk4plus">4+ BHK</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <span>Budget (Lakhs)</span>
+                        <i class="fas fa-chevron-down text-sm transition-transform duration-300"></i>
+                    </div>
+                    <div class="accordion-content">
+                        <label for="budgetMin">Min: <span id="budgetMinLabel">0</span> L</label>
+                        <input type="range" id="budgetMin" min="0" max="1000" step="10" value="0" class="mb-4">
+                        <label for="budgetMax">Max: <span id="budgetMaxLabel">1000</span> L</label>
+                        <input type="range" id="budgetMax" min="0" max="1000" step="10" value="1000">
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <span>Carpet Area (sq. ft.)</span>
+                        <i class="fas fa-chevron-down text-sm transition-transform duration-300"></i>
+                    </div>
+                    <div class="accordion-content">
+                        <label for="areaMin">Min: <span id="areaMinLabel">0</span> sq.ft.</label>
+                        <input type="range" id="areaMin" min="0" max="5000" step="50" value="0" class="mb-4">
+                        <label for="areaMax">Max: <span id="areaMaxLabel">5000</span> sq.ft.</label>
+                        <input type="range" id="areaMax" min="0" max="5000" step="50" value="5000">
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <span>Possession Time</span>
+                        <i class="fas fa-chevron-down text-sm transition-transform duration-300"></i>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="radio-group">
+                            <input type="radio" id="possessionAll" name="possessionTime" value="" checked>
+                            <label for="possessionAll">Any</label>
+                            <input type="radio" id="possessionReady" name="possessionTime" value="Ready to Move">
+                            <label for="possessionReady">Ready to Move</label>
+                            <input type="radio" id="possession1Y" name="possessionTime" value="< 1 Year">
+                            <label for="possession1Y">&lt; 1 Year</label>
+                            <input type="radio" id="possession1_2Y" name="possessionTime" value="1-2 Years">
+                            <label for="possession1_2Y">1-2 Years</label>
+                            <input type="radio" id="possession2Yplus" name="possessionTime" value="2+ Years">
+                            <label for="possession2Yplus">2+ Years</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <span>Property Options</span>
+                        <i class="fas fa-chevron-down text-sm transition-transform duration-300"></i>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="optionBalcony" name="propertyOptions" value="Balcony">
+                            <label for="optionBalcony">Balcony</label>
+                            <input type="checkbox" id="optionParking" name="propertyOptions" value="Parking">
+                            <label for="optionParking">Parking</label>
+                            <input type="checkbox" id="optionGarden" name="propertyOptions" value="Garden">
+                            <label for="optionGarden">Garden</label>
+                            <input type="checkbox" id="optionGym" name="propertyOptions" value="Gym">
+                            <label for="optionGym">Gym</label>
+                            <input type="checkbox" id="optionPool" name="propertyOptions" value="Swimming Pool">
+                            <label for="optionPool">Pool</label>
+                            <input type="checkbox" id="optionSecurity" name="propertyOptions" value="24/7 Security">
+                            <label for="optionSecurity">Security</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <span>Location</span>
+                        <i class="fas fa-chevron-down text-sm transition-transform duration-300"></i>
+                    </div>
+                    <div class="accordion-content">
+                        <input type="search" id="location" placeholder="Search by locality..." class="w-full">
+                    </div>
+                </div>
+
+            </div>
+
+            <button type="submit" class="hidden"></button>
+        </form>
+    </div>
+
+    <div id="resultsArea" class="w-full md:w-2/3 lg:w-3/4">
+        <h2 class="text-2xl font-bold text-slate-700 mb-6">
+            <i class="fas fa-th-list text-blue-500"></i> Available Properties (<span id="resultCount">0</span>)
+        </h2>
+
+        <div id="loader" class="hidden flex justify-center items-center h-48">
+            <div class="loading-spinner"></div>
+        </div>
+
+        <div id="propertyGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+            </div>
+        <div id="noResults" class="hidden text-center py-16 bg-white rounded-xl shadow-lg mt-6">
+            <i class="fas fa-search-minus text-5xl text-slate-400 mb-4"></i>
+            <h3 class="text-xl font-semibold text-slate-600">No properties match your criteria.</h3>
+            <p class="text-slate-500 mt-2">Try adjusting your filters or uploading more data.</p>
+        </div>
+        <div id="noDataMessage" class="hidden text-center py-16 bg-white rounded-xl shadow-lg mt-6">
+            <i class="fas fa-database text-5xl text-slate-400 mb-4"></i>
+            <h3 class="text-xl font-semibold text-slate-600">No property data loaded.</h3>
+            <p class="text-slate-500 mt-2">Please upload an Excel sheet or add properties manually using the buttons in the header.</p>
+        </div>
+    </div>
+  </main>
+
+  <footer class="md:hidden sticky bottom-0 left-0 right-0 bg-white shadow-lg p-4 z-50 border-t border-slate-200">
+    <div class="flex justify-around items-center">
+      <button id="mobileShowFiltersBtn" class="flex flex-col items-center text-blue-600 text-sm">
+        <i class="fas fa-filter text-lg"></i>
+        <span>Filters</span>
+      </button>
+      <button id="mobileShowResultsBtn" class="hidden flex-col items-center text-blue-600 text-sm">
+        <i class="fas fa-list text-lg"></i>
+        <span>Results</span>
+      </button>
+    </div>
+  </footer>
+
+  <!-- Property Add/Edit Modal -->
+  <div id="propertyModal" class="modal">
+    <div class="modal-content w-full md:w-1/2 lg:w-1/3">
+      <button class="modal-close-btn" id="closeModalBtn">&times;</button>
+      <h3 id="modalTitle" class="text-2xl font-bold mb-6 text-slate-800">Add New Property</h3>
+      <form id="propertyForm" class="modal-form">
+        <div class="form-group">
+          <label for="propertyName">Property Name <span class="text-red-500">*</span></label>
+          <input type="text" id="propertyName" required class="border p-2 rounded-md w-full">
+        </div>
+        <div class="form-group">
+          <label for="propertyType">Property Type <span class="text-red-500">*</span></label>
+          <select id="propertyType" required class="border p-2 rounded-md w-full">
+            <option value="">Select Type</option>
+            <option value="Apartment">Apartment</option>
+            <option value="Villa">Villa</option>
+            <option value="Commercial">Commercial</option>
+            <option value="Penthouse">Penthouse</option>
+            <option value="Simplex">Simplex</option>
+            <option value="Duplex">Duplex</option>
+            <option value="NA Plot">NA Plot</option>
+          </select>
+        </div>
+        <div class="form-group" id="propertyBHKGroup">
+          <label for="propertyBHK">BHK Configuration</label>
+          <select id="propertyBHK" class="border p-2 rounded-md w-full">
+            <option value="">Select BHK</option>
+            <option value="1 BHK">1 BHK</option>
+            <option value="2 BHK">2 BHK</option>
+            <option value="3 BHK">3 BHK</option>
+            <option value="4 BHK">4 BHK</option>
+            <option value="4+ BHK">4+ BHK</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="propertyBudget">Budget (Lakhs) <span class="text-red-500">*</span></label>
+          <input type="number" id="propertyBudget" required step="0.1" min="0" class="border p-2 rounded-md w-full">
+        </div>
+        <div class="form-group">
+          <label for="propertyArea">Carpet Area (sq. ft.) <span class="text-red-500">*</span></label>
+          <input type="number" id="propertyArea" required step="1" min="0" class="border p-2 rounded-md w-full">
+        </div>
+        <div class="form-group">
+          <label for="propertyPossession">Possession Time <span class="text-red-500">*</span></label>
+          <select id="propertyPossession" required class="border p-2 rounded-md w-full">
+            <option value="">Select Possession</option>
+            <option value="Ready to Move">Ready to Move</option>
+            <option value="< 1 Year">&lt; 1 Year</option>
+            <option value="1-2 Years">1-2 Years</option>
+            <option value="2+ Years">2+ Years</option>
+          </select>
+        </div>
+        <div class="form-group">
+            <label for="propertyLocation">Location <span class="text-red-500">*</span></label>
+            <input type="text" id="propertyLocation" required class="border p-2 rounded-md w-full">
+        </div>
+        <div class="form-group">
+            <label>Property Options (comma-separated, e.g., Balcony,Parking)</label>
+            <input type="text" id="propertyOptions" class="border p-2 rounded-md w-full" placeholder="Balcony, Parking, Gym">
+        </div>
+
+        <!-- NEW: Optional Description Feed Section -->
+        <div class="optional-toggle" id="descriptionToggle">
+          <span>Add Description Feed (Optional)</span>
+          <i class="fas fa-chevron-down"></i>
+        </div>
+        <div class="optional-fields" id="descriptionFields">
+          <div class="form-group">
+            <label for="propertyDescription">Description</label>
+            <textarea id="propertyDescription" class="border p-2 rounded-md w-full" rows="3" placeholder="Detailed property description..."></textarea>
+          </div>
+          <div class="form-group">
+            <label for="propertyMap">Map Location (Embed URL)</label>
+            <input type="text" id="propertyMap" class="border p-2 rounded-md w-full" placeholder="https://www.google.com/maps/embed?pb=...">
+          </div>
+          <div class="form-group">
+            <label for="propertyVideo">Video Link (YouTube)</label>
+            <input type="text" id="propertyVideo" class="border p-2 rounded-md w-full" placeholder="https://www.youtube.com/embed/...">
+          </div>
+          <div class="form-group">
+            <label for="propertyPhotos">Photo URLs (comma separated)</label>
+            <textarea id="propertyPhotos" class="border p-2 rounded-md w-full" placeholder="https://example.com/photo1.jpg, https://example.com/photo2.jpg"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="propertyBrochures">Brochures (format: name|URL, one per line)</label>
+            <textarea id="propertyBrochures" class="border p-2 rounded-md w-full" placeholder="Floor Plan|https://example.com/plan.pdf&#10;Brochure|https://example.com/brochure.pdf"></textarea>
+          </div>
+        </div>
+
+        <button type="submit" id="modalSubmitBtn" class="w-full bg-blue-600 text-white p-3 rounded-md hover:bg-blue-700 transition duration-200">Add Property</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- NEW: Description Feed Modal -->
+  <div id="descriptionModal" class="modal">
+    <div class="modal-content">
+      <button class="modal-close-btn" id="closeDescriptionModalBtn">&times;</button>
+      <div class="description-header">
+        <div>
+          <h3 id="descriptionPropertyName">Luxury Villa</h3>
+          <div class="description-location">
+            <i class="fas fa-map-marker-alt"></i>
+            <span id="descriptionLocation">Downtown, Mumbai</span>
+          </div>
+        </div>
+        <div class="text-2xl font-extrabold text-blue-600" id="descriptionBudget">₹250 L</div>
+      </div>
+
+      <div class="description-feed-container" id="descriptionFeedContainer">
+        <button class="toggle-description-btn" id="toggleDescriptionBtn">
+          <i class="fas fa-chevron-down"></i>
+        </button>
+
+        <div class="description-section">
+          <h4><i class="fas fa-info-circle text-blue-500"></i> Description</h4>
+          <p id="descriptionContent">This beautiful property features modern architecture with spacious rooms and stunning city views. Located in a prime location with all amenities nearby.</p>
+        </div>
+
+        <div class="description-section">
+          <h4><i class="fas fa-map-marked-alt text-green-500"></i> Map Location</h4>
+          <div class="map-container" id="mapContainer">
+            <i class="fas fa-map text-4xl text-slate-400"></i>
+          </div>
+        </div>
+
+        <div class="description-section">
+          <h4><i class="fas fa-play-circle text-red-500"></i> Video Tour</h4>
+          <div class="map-container" id="videoContainer">
+            <i class="fas fa-play-circle text-4xl text-slate-400"></i>
+          </div>
+        </div>
+
+        <div class="description-section">
+          <h4><i class="fas fa-images text-purple-500"></i> Photo Gallery</h4>
+          <div class="media-container" id="photoGallery">
+            <div class="media-item">
+              <i class="fas fa-image"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="description-section">
+          <h4><i class="fas fa-file-pdf text-red-500"></i> Brochures</h4>
+          <div id="brochuresList">
+            <div class="brochure-item">
+              <i class="fas fa-file-pdf"></i>
+              <a href="#" target="_blank">Floor Plan</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const filterSidebar = document.getElementById('filterSidebar');
+    const propertySearchForm = document.getElementById('propertySearchForm');
+    const resultsArea = document.getElementById('resultsArea');
+    const propertyGrid = document.getElementById('propertyGrid');
+    const noResults = document.getElementById('noResults');
+    const noDataMessage = document.getElementById('noDataMessage');
+    const propertyUploader = document.getElementById('propertyUploader');
+    const loader = document.getElementById('loader');
+    const resultCountSpan = document.getElementById('resultCount');
+    const activeFiltersContainer = document.getElementById('activeFiltersContainer');
+    const clearAllFiltersBtn = document.getElementById('clearAllFiltersBtn');
+
+    // Filter form elements
+    const propertyTypeRadios = document.querySelectorAll('input[name="propertyType"]');
+    const bhkAccordionItem = document.getElementById('bhkAccordionItem');
+    const bhkRadios = document.querySelectorAll('input[name="bhkConfig"]');
+    const budgetMinInput = document.getElementById('budgetMin');
+    const budgetMinLabel = document.getElementById('budgetMinLabel');
+    const budgetMaxInput = document.getElementById('budgetMax');
+    const budgetMaxLabel = document.getElementById('budgetMaxLabel');
+    const areaMinInput = document.getElementById('areaMin');
+    const areaMinLabel = document.getElementById('areaMinLabel');
+    const areaMaxInput = document.getElementById('areaMax');
+    const areaMaxLabel = document.getElementById('areaMaxLabel');
+    const possessionTimeRadios = document.querySelectorAll('input[name="possessionTime"]');
+    const propertyOptionsCheckboxes = document.querySelectorAll('input[name="propertyOptions"]');
+    const locationInput = document.getElementById('location');
+
+    // Mobile UI elements
+    const mobileShowFiltersBtn = document.getElementById('mobileShowFiltersBtn');
+    const mobileShowResultsBtn = document.getElementById('mobileShowResultsBtn');
+
+    // Modal elements (re-used for add/edit)
+    const addPropertyBtn = document.getElementById('addPropertyBtn');
+    const propertyModal = document.getElementById('propertyModal'); // Changed from addPropertyModal
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const propertyForm = document.getElementById('propertyForm'); // Changed from addPropertyForm
+    const modalTitle = document.getElementById('modalTitle');
+    const modalSubmitBtn = document.getElementById('modalSubmitBtn');
+
+    // Modal input fields
+    const modalPropertyName = document.getElementById('propertyName');
+    const modalPropertyType = document.getElementById('propertyType');
+    const modalPropertyBHKGroup = document.getElementById('propertyBHKGroup'); // Changed from newPropertyBHKGroup
+    const modalPropertyBHK = document.getElementById('propertyBHK'); // Changed from newPropertyBHK
+    const modalPropertyBudget = document.getElementById('propertyBudget');
+    const modalPropertyArea = document.getElementById('propertyArea');
+    const modalPropertyPossession = document.getElementById('propertyPossession');
+    const modalPropertyLocation = document.getElementById('propertyLocation');
+    const modalPropertyOptions = document.getElementById('propertyOptions');
+
+    // NEW: Description feed modal elements
+    const descriptionModal = document.getElementById('descriptionModal');
+    const closeDescriptionModalBtn = document.getElementById('closeDescriptionModalBtn');
+    const descriptionPropertyName = document.getElementById('descriptionPropertyName');
+    const descriptionLocation = document.getElementById('descriptionLocation');
+    const descriptionBudget = document.getElementById('descriptionBudget');
+    const descriptionContent = document.getElementById('descriptionContent');
+    const mapContainer = document.getElementById('mapContainer');
+    const videoContainer = document.getElementById('videoContainer');
+    const photoGallery = document.getElementById('photoGallery');
+    const brochuresList = document.getElementById('brochuresList');
+    const toggleDescriptionBtn = document.getElementById('toggleDescriptionBtn');
+    const descriptionFeedContainer = document.getElementById('descriptionFeedContainer');
+
+    // NEW: Description feed form elements
+    const descriptionToggle = document.getElementById('descriptionToggle');
+    const descriptionFields = document.getElementById('descriptionFields');
+    const propertyDescription = document.getElementById('propertyDescription');
+    const propertyMap = document.getElementById('propertyMap');
+    const propertyVideo = document.getElementById('propertyVideo');
+    const propertyPhotos = document.getElementById('propertyPhotos');
+    const propertyBrochures = document.getElementById('propertyBrochures');
+
+
+    let propertyData = []; // Stores all uploaded/added property data
+    let editingPropertyId = null; // Stores the ID of the property currently being edited
+
+    // --- Utility Functions ---
+    function generateUniqueId() {
+        return 'prop_' + Date.now().toString(36) + Math.random().toString(36).substring(2);
+    }
+
+    // --- Initial Load & Data Management ---
+    document.addEventListener('DOMContentLoaded', () => {
+        loadPropertyData();
+
+        // Initialize slider labels
+        budgetMinInput.dispatchEvent(new Event('input'));
+        budgetMaxInput.dispatchEvent(new Event('input'));
+        areaMinInput.dispatchEvent(new Event('input'));
+        areaMaxInput.dispatchEvent(new Event('input'));
+
+        // Attach event listeners for real-time filtering
+        setupRealTimeFilters();
+
+        // Setup Accordion functionality
+        setupAccordions();
+
+        // Setup mobile view toggles
+        setupMobileToggles();
+
+        // Setup Modal functionality for Add/Edit
+        setupPropertyModal();
+
+        // NEW: Setup description feed toggle
+        setupDescriptionToggle();
+
+        // Attach event listener for Edit/Delete buttons on property cards (delegation)
+        propertyGrid.addEventListener('click', handlePropertyCardActions);
+
+        // NEW: Setup description modal
+        setupDescriptionModal();
+    });
+
+    function loadPropertyData() {
+        const storedData = localStorage.getItem('estatePropertyData');
+        if (storedData) {
+            propertyData = JSON.parse(storedData);
+            // Ensure all loaded properties have a unique ID
+            propertyData = propertyData.map(prop => ({ ...prop, _id: prop._id || generateUniqueId() }));
+            if (propertyData.length > 0) {
+                noDataMessage.classList.add('hidden');
+                filterProperties(); // Apply filters on initial load
+            } else {
+                noDataMessage.classList.remove('hidden');
+                propertyGrid.innerHTML = '';
+                noResults.classList.add('hidden');
+                resultCountSpan.textContent = '0';
+            }
+        } else {
+            noDataMessage.classList.remove('hidden');
+            propertyGrid.innerHTML = '';
+            noResults.classList.add('hidden');
+            resultCountSpan.textContent = '0';
+        }
+    }
+
+    function savePropertyData() {
+        localStorage.setItem('estatePropertyData', JSON.stringify(propertyData));
+    }
+
+    // --- Data Upload ---
+    propertyUploader.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        loader.classList.remove('hidden'); // Show loader
+        propertyGrid.innerHTML = ''; // Clear results
+        noResults.classList.add('hidden');
+        noDataMessage.classList.add('hidden');
+        resultCountSpan.textContent = '0';
+
+
+        try {
+            const data = await readFileAsArrayBuffer(file);
+            const workbook = XLSX.read(data, { type: 'array' });
+            const sheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[sheetName];
+            const json = XLSX.utils.sheet_to_json(worksheet);
+
+            // Basic validation for required columns
+            if (json.length > 0 && json[0].hasOwnProperty('PropertyName') && json[0].hasOwnProperty('Budget')) {
+                const newProperties = json.map(prop => {
+                  // NEW: Map Excel columns to description feed fields
+                  return {
+                    ...prop,
+                    _id: prop._id || generateUniqueId(),
+                    // Map Excel columns to description feed fields
+                    Description: prop.Description || '',
+                    MapLocation: prop.MapLocation || '',
+                    VideoLink: prop.VideoLink || '',
+                    Photos: prop.Photos ? prop.Photos.split(',').map(url => url.trim()) : [],
+                    Brochures: prop.Brochures ? prop.Brochures.split('\n').map(line => {
+                      const [name, url] = line.split('|').map(part => part.trim());
+                      return { name, url };
+                    }) : []
+                  };
+                });
+                propertyData = [...propertyData, ...newProperties]; // Add to existing data
+                savePropertyData();
+                alert(`${json.length} properties loaded successfully from Excel!`);
+                clearFilters(); // Reset filters and trigger a new search
+            } else {
+                alert('Invalid Excel format. Please ensure columns like "PropertyName" and "Budget" exist in your sheet.');
+            }
+        } catch (error) {
+            console.error("Error reading Excel file:", error);
+            alert("Failed to read Excel file. Please ensure it's a valid .xlsx or .xls file.");
+        } finally {
+            loader.classList.add('hidden'); // Hide loader
+            e.target.value = ''; // Clear the input so same file can be re-uploaded
+        }
+    });
+
+    function readFileAsArrayBuffer(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (event) => resolve(new Uint8Array(event.target.result));
+            reader.onerror = (error) => reject(error);
+            reader.readAsArrayBuffer(file);
+        });
+    }
+
+    // --- Real-time Filter Setup ---
+    function setupRealTimeFilters() {
+        // Input fields (text, search)
+        locationInput.addEventListener('input', filterProperties);
+
+        // Range inputs (sliders)
+        budgetMinInput.addEventListener('input', () => {
+            // Ensure min <= max
+            if (parseFloat(budgetMinInput.value) > parseFloat(budgetMaxInput.value)) {
+                budgetMaxInput.value = budgetMinInput.value;
+            }
+            budgetMinLabel.textContent = budgetMinInput.value;
+            budgetMaxLabel.textContent = budgetMaxInput.value; // Update max in case it changed
+            filterProperties();
+        });
+        budgetMaxInput.addEventListener('input', () => {
+            // Ensure max >= min
+            if (parseFloat(budgetMaxInput.value) < parseFloat(budgetMinInput.value)) {
+                budgetMinInput.value = budgetMaxInput.value;
+            }
+            budgetMaxLabel.textContent = budgetMaxInput.value;
+            budgetMinLabel.textContent = budgetMinInput.value; // Update min in case it changed
+            filterProperties();
+        });
+
+        areaMinInput.addEventListener('input', () => {
+            // Ensure min <= max
+            if (parseFloat(areaMinInput.value) > parseFloat(areaMaxInput.value)) {
+                areaMaxInput.value = areaMinInput.value;
+            }
+            areaMinLabel.textContent = areaMinInput.value;
+            areaMaxLabel.textContent = areaMaxInput.value; // Update max in case it changed
+            filterProperties();
+        });
+        areaMaxInput.addEventListener('input', () => {
+            // Ensure max >= min
+            if (parseFloat(areaMaxInput.value) < parseFloat(areaMinInput.value)) {
+                areaMinInput.value = areaMaxInput.value;
+            }
+            areaMaxLabel.textContent = areaMaxInput.value;
+            areaMinLabel.textContent = areaMinInput.value; // Update min in case it changed
+            filterProperties();
+        });
+
+
+        // Radio buttons and Checkboxes
+        document.querySelectorAll('input[type="radio"], input[type="checkbox"]').forEach(input => {
+            input.addEventListener('change', () => {
+                // Special handling for BHK: show/hide accordion item
+                if (input.name === 'propertyType') {
+                    if (input.value === 'Apartment') {
+                        bhkAccordionItem.style.display = 'block';
+                        // Optionally expand BHK accordion when Apartment is selected
+                        if (!bhkAccordionItem.classList.contains('active')) {
+                            bhkAccordionItem.querySelector('.accordion-header').click();
+                        }
+                    } else {
+                        bhkAccordionItem.style.display = 'none';
+                        // Also uncheck any BHK selections if type changes from Apartment
+                        bhkRadios.forEach(bhkRadio => bhkRadio.checked = false);
+                    }
+                }
+                filterProperties();
+            });
+        });
+
+        clearAllFiltersBtn.addEventListener('click', clearFilters);
+    }
+
+    // --- Filter Logic ---
+    function getSelectedRadioValue(name) {
+        const selected = document.querySelector(`input[name="${name}"]:checked`);
+        return selected ? selected.value : '';
+    }
+
+    function getSelectedCheckboxValues(name) {
+        return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`))
+                    .map(checkbox => checkbox.value);
+    }
+
+    function filterProperties() {
+        const filters = {
+            type: getSelectedRadioValue('propertyType'),
+            bhk: getSelectedRadioValue('bhkConfig'),
+            budgetMin: parseFloat(budgetMinInput.value),
+            budgetMax: parseFloat(budgetMaxInput.value),
+            areaMin: parseFloat(areaMinInput.value),
+            areaMax: parseFloat(areaMaxInput.value),
+            possession: getSelectedRadioValue('possessionTime'),
+            options: getSelectedCheckboxValues('propertyOptions'),
+            location: locationInput.value.trim().toLowerCase()
+        };
+
+        const results = propertyData.filter(prop => {
+            let isMatch = true;
+
+            // Type
+            if (filters.type && prop.Type !== filters.type) isMatch = false;
+
+            // BHK (only apply if property type is Apartment and BHK is selected)
+            // Note: prop.BHK might be string like "2 BHK" or just "2" depending on your data
+            // Ensure consistency. Here assuming "2 BHK" format.
+            if (filters.bhk && filters.type === 'Apartment' && prop.BHK !== filters.bhk) isMatch = false;
+            // If type is not apartment, BHK config should not be a filter.
+            if (filters.type !== 'Apartment' && prop.BHK && filters.bhk) { // If a BHK filter is applied but type isn't apartment.
+                isMatch = false;
+            }
+
+
+            // Budget (within range)
+            // Use Number() to ensure comparison, as data from Excel/form might be strings
+            if (Number(prop.Budget) < filters.budgetMin || Number(prop.Budget) > filters.budgetMax) isMatch = false;
+
+            // Area (within range)
+            if (Number(prop.CarpetArea) < filters.areaMin || Number(prop.CarpetArea) > filters.areaMax) isMatch = false;
+
+            // Possession
+            if (filters.possession && prop.Possession !== filters.possession) isMatch = false;
+
+            // Property Options (all selected options must be present in property's 'Options' string)
+            if (filters.options.length > 0) {
+                const propOptions = (prop.Options || '').split(',').map(o => o.trim()).filter(o => o !== ''); // Filter out empty strings from split
+                for (const requiredOption of filters.options) {
+                    if (!propOptions.includes(requiredOption)) {
+                        isMatch = false;
+                        break;
+                    }
+                }
+            }
+
+            // Location (partial match, case-insensitive)
+            if (filters.location && prop.Location && !prop.Location.toLowerCase().includes(filters.location)) isMatch = false;
+
+            return isMatch;
+        });
+
+        displayResults(results, filters);
+    }
+
+    function getPropertyIcon(type) {
+        switch (type) {
+            case 'Apartment':
+            case 'Penthouse':
+            case 'Simplex':
+            case 'Duplex':
+                return 'fa-building';
+            case 'Villa':
+                return 'fa-house-user';
+            case 'NA Plot':
+                return 'fa-tree'; // Or fa-ruler-combined for land
+            case 'Commercial':
+                return 'fa-store-alt'; // Or fa-briefcase
+            default:
+                return 'fa-home'; // Default fallback
+        }
+    }
+
+    // --- UI Display ---
+    function displayResults(results, filters) {
+        propertyGrid.innerHTML = ''; // Clear previous results
+        resultCountSpan.textContent = results.length;
+
+        if (propertyData.length === 0) {
+            noDataMessage.classList.remove('hidden');
+            noResults.classList.add('hidden');
+            propertyGrid.classList.add('hidden');
+            return;
+        } else {
+            noDataMessage.classList.add('hidden');
+        }
+
+        if (results.length > 0) {
+            noResults.classList.add('hidden');
+            propertyGrid.classList.remove('hidden');
+            results.forEach(prop => {
+                const card = document.createElement('div');
+                card.className = 'property-card';
+                card.innerHTML = `
+                    <div class="property-card-icon-container">
+                        <i class="fa-solid ${getPropertyIcon(prop.Type)}"></i>
+                    </div>
+                    <div class="p-5 flex-grow">
+                        <h3 class="text-xl font-bold mb-2">${prop.PropertyName || 'N/A'}</h3>
+                        <p class="text-slate-600 mb-2 text-sm"><i class="fas fa-map-marker-alt mr-2 text-blue-500"></i>${prop.Location || 'N/A'}</p>
+                        <div class="grid grid-cols-2 gap-y-2 gap-x-4 text-sm mb-4">
+                            <div class="flex items-center gap-2"><i class="fas fa-home text-slate-500"></i><div><strong>Type:</strong> ${prop.Type || 'N/A'}</div></div>
+                            ${prop.Type && prop.Type.includes('Apartment') && prop.BHK ? `<div class="flex items-center gap-2"><i class="fas fa-bed text-slate-500"></i><div><strong>Config:</strong> ${prop.BHK}</div></div>` : ''}
+                            <div class="flex items-center gap-2"><i class="fas fa-ruler-combined text-slate-500"></i><div><strong>Area:</strong> ${prop.CarpetArea || 'N/A'} sq.ft.</div></div>
+                            <div class="flex items-center gap-2"><i class="fas fa-calendar-alt text-slate-500"></i><div><strong>Possession:</strong> ${prop.Possession || 'N/A'}</div></div>
+                            ${prop.Options ? `<div class="col-span-2 flex items-start gap-2"><i class="fas fa-tags text-slate-500 mt-1"></i><div class="flex flex-wrap gap-1">${prop.Options.split(',').filter(o => o.trim() !== '').map(opt => `<span class="bg-blue-50 text-blue-700 text-xs px-2 py-0.5 rounded-full">${opt.trim()}</span>`).join('')}</div></div>` : ''}
+                        </div>
+                        <div class="text-2xl font-extrabold text-blue-600 mt-auto pt-4">₹${prop.Budget || 'N/A'} L</div>
+                    </div>
+                    <div class="p-5 pt-0 flex gap-2">
+                        <button class="w-full btn bg-blue-100 text-blue-700 hover:bg-blue-200 p-2 rounded-lg text-sm edit-btn" data-id="${prop._id}">
+                            <i class="fas fa-edit mr-2"></i>Edit
+                        </button>
+                        <button class="w-full btn bg-red-100 text-red-700 hover:bg-red-200 p-2 rounded-lg text-sm delete-btn" data-id="${prop._id}">
+                            <i class="fas fa-trash-alt mr-2"></i>Delete
+                        </button>
+                    </div>
+                    <!-- NEW: View More Button -->
+                    <button class="view-more-btn absolute top-4 right-4 bg-white bg-opacity-80 rounded-full p-2 shadow-md hover:bg-blue-100 transition-colors" data-id="${prop._id}">
+                      <i class="fas fa-ellipsis-h text-blue-600"></i>
+                    </button>
+                `;
+                propertyGrid.appendChild(card);
+            });
+        } else {
+            propertyGrid.classList.add('hidden');
+            noResults.classList.remove('hidden');
+        }
+
+        renderActiveFilters(filters);
+    }
+
+    function renderActiveFilters(filters) {
+        activeFiltersContainer.innerHTML = '';
+        const addChip = (key, value, displayValue, isClearable = true) => {
+            if (value && value !== 'Any' && value !== '' && parseFloat(value) !== 0) { // 0 for min sliders, empty string for 'Any' radio
+                const chip = document.createElement('span');
+                chip.className = 'filter-chip';
+                chip.innerHTML = `${displayValue} ${isClearable ? `<i class="fas fa-times-circle remove-btn ml-2" data-filter-key="${key}" data-filter-value="${value}"></i>` : ''}`;
+                if (isClearable) {
+                    chip.querySelector('.remove-btn').addEventListener('click', removeFilter);
+                }
+                activeFiltersContainer.appendChild(chip);
+            }
+        };
+
+        // Property Type
+        if (filters.type) addChip('propertyType', filters.type, `Type: ${filters.type}`);
+
+        // BHK (only show if Apartment is selected as type)
+        if (filters.type === 'Apartment' && filters.bhk) addChip('bhkConfig', filters.bhk, `BHK: ${filters.bhk}`);
+
+        // Budget
+        if (filters.budgetMin > 0 || filters.budgetMax < 1000) { // Adjust max based on your slider max
+            addChip('budget', 'range', `Budget: ${filters.budgetMin}L - ${filters.budgetMax}L`);
+        }
+        // Area
+        if (filters.areaMin > 0 || filters.areaMax < 5000) { // Adjust max based on your slider max
+            addChip('area', 'range', `Area: ${filters.areaMin}sq.ft - ${filters.areaMax}sq.ft`);
+        }
+
+        // Possession
+        if (filters.possession) addChip('possessionTime', filters.possession, `Possession: ${filters.possession}`);
+
+        // Property Options
+        if (filters.options.length > 0) {
+            filters.options.forEach(option => addChip('propertyOptions', option, `Option: ${option}`));
+        }
+
+        // Location
+        if (filters.location) addChip('location', filters.location, `Location: ${filters.location}`);
+    }
+
+    function removeFilter(event) {
+        const key = event.target.dataset.filterKey;
+        const valueToRemove = event.target.dataset.filterValue;
+
+        if (key === 'budget') {
+            budgetMinInput.value = budgetMinInput.min;
+            budgetMaxInput.value = budgetMaxInput.max;
+        } else if (key === 'area') {
+            areaMinInput.value = areaMinInput.min;
+            areaMaxInput.value = areaMaxInput.max;
+        } else if (key === 'propertyOptions') {
+            // Find the specific checkbox and uncheck it
+            const checkboxToRemove = document.querySelector(`input[name="propertyOptions"][value="${valueToRemove}"]`);
+            if (checkboxToRemove) checkboxToRemove.checked = false;
+        } else if (key === 'location') {
+            locationInput.value = '';
+        } else {
+            // For radio buttons, select the 'Any' option or uncheck all
+            const radioGroup = document.querySelectorAll(`input[name="${key}"]`);
+            const anyOption = document.getElementById(`${key.replace('Time', '')}All`);
+            if (anyOption) {
+                anyOption.checked = true;
+            } else {
+                radioGroup.forEach(radio => radio.checked = false);
+            }
+            // Special handling for BHK if propertyType is removed and it was apartment
+            if (key === 'propertyType' && valueToRemove === 'Apartment') {
+                bhkAccordionItem.style.display = 'none';
+                bhkRadios.forEach(bhkRadio => bhkRadio.checked = false); // Clear BHK if Apartment filter removed
+            }
+        }
+        filterProperties(); // Re-apply filters
+    }
+
+
+    function clearFilters() {
+        propertySearchForm.reset(); // Resets all form fields
+
+        // Manual reset for sliders and their labels
+        budgetMinInput.value = budgetMinInput.min;
+        budgetMaxInput.value = budgetMaxInput.max;
+        budgetMinLabel.textContent = budgetMinInput.min;
+        budgetMaxLabel.textContent = budgetMaxInput.max;
+        areaMinInput.value = areaMinInput.min;
+        areaMaxInput.value = areaMaxInput.max;
+        areaMinLabel.textContent = areaMinInput.min;
+        areaMaxLabel.textContent = areaMaxInput.max;
+
+        // Ensure "Any" radio buttons are checked where applicable
+        document.getElementById('typeAll').checked = true;
+        document.getElementById('bhkAll').checked = true;
+        document.getElementById('possessionAll').checked = true;
+
+        // Hide BHK accordion if no type is selected or type is not apartment
+        bhkAccordionItem.style.display = 'none';
+
+        filterProperties(); // Re-apply filters to show all
+    }
+
+    // --- Accordion Logic ---
+    function setupAccordions() {
+        document.querySelectorAll('.accordion-header').forEach(header => {
+            header.addEventListener('click', () => {
+                const item = header.closest('.accordion-item');
+                const content = header.nextElementSibling;
+                const icon = header.querySelector('.fas');
+
+                // Close other open accordions if desired (optional, but good for compactness)
+                document.querySelectorAll('.accordion-item.active').forEach(openItem => {
+                    if (openItem !== item) {
+                        openItem.classList.remove('active');
+                        openItem.querySelector('.accordion-content').style.maxHeight = null;
+                        openItem.querySelector('.fas').classList.remove('fa-chevron-up');
+                        openItem.querySelector('.fas').classList.add('fa-chevron-down');
+                    }
+                });
+
+                item.classList.toggle('active');
+                if (item.classList.contains('active')) {
+                    content.style.maxHeight = content.scrollHeight + "px"; // Expand
+                    icon.classList.remove('fa-chevron-down');
+                    icon.classList.add('fa-chevron-up');
+                } else {
+                    content.style.maxHeight = null; // Collapse
+                    icon.classList.remove('fa-chevron-up');
+                    icon.classList.add('fa-chevron-down');
+                }
+            });
+        });
+        // Set initial state for accordion content max-height to ensure smooth transition
+        document.querySelectorAll('.accordion-content').forEach(content => {
+            content.style.maxHeight = null; // Ensures it's initially collapsed
+        });
+
+        // Set initial state for BHK accordion (hidden unless 'Apartment' is selected)
+        const selectedType = getSelectedRadioValue('propertyType');
+        if (selectedType !== 'Apartment') {
+            bhkAccordionItem.style.display = 'none';
+        } else {
+            bhkAccordionItem.style.display = 'block';
+        }
+    }
+
+    // --- Mobile UI Toggles ---
+    function setupMobileToggles() {
+        mobileShowFiltersBtn.addEventListener('click', () => {
+            filterSidebar.classList.remove('hidden');
+            resultsArea.classList.add('hidden');
+            mobileShowFiltersBtn.classList.add('hidden');
+            mobileShowResultsBtn.classList.remove('hidden');
+            document.body.scrollTop = 0; // For Safari
+            document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+        });
+
+        mobileShowResultsBtn.addEventListener('click', () => {
+            filterSidebar.classList.add('hidden');
+            resultsArea.classList.remove('hidden');
+            mobileShowFiltersBtn.classList.remove('hidden');
+            mobileShowResultsBtn.classList.add('hidden');
+            document.body.scrollTop = 0; // For Safari
+            document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+        });
+
+        // Initially show filters on mobile, hide results
+        if (window.innerWidth < 768) { // Assuming md breakpoint is 768px
+            resultsArea.classList.add('hidden');
+            mobileShowFiltersBtn.classList.remove('hidden');
+            mobileShowResultsBtn.classList.add('hidden');
+        } else {
+            // On larger screens, ensure both are visible by default
+            filterSidebar.classList.remove('hidden');
+            resultsArea.classList.remove('hidden');
+            mobileShowFiltersBtn.classList.add('hidden'); // Hide mobile buttons on desktop
+            mobileShowResultsBtn.classList.add('hidden');
+        }
+    }
+
+    // Re-evaluate visibility on resize (e.g., rotating phone, or resizing browser)
+    window.addEventListener('resize', () => {
+        if (window.innerWidth >= 768) { // Desktop view
+            filterSidebar.classList.remove('hidden');
+            resultsArea.classList.remove('hidden');
+            mobileShowFiltersBtn.classList.add('hidden');
+            mobileShowResultsBtn.classList.add('hidden');
+        } else { // Mobile view
+            // Keep current view (filters or results)
+            // But ensure buttons reflect the active view
+            if (filterSidebar.classList.contains('hidden')) { // Results are currently shown
+                mobileShowFiltersBtn.classList.remove('hidden');
+                mobileShowResultsBtn.classList.add('hidden');
+            } else { // Filters are currently shown
+                mobileShowFiltersBtn.classList.add('hidden');
+                mobileShowResultsBtn.classList.remove('hidden');
+            }
+        }
+        // Recalculate accordion content heights on resize
+        document.querySelectorAll('.accordion-item.active .accordion-content').forEach(content => {
+            content.style.maxHeight = content.scrollHeight + "px";
+        });
+    });
+
+    // --- Add/Edit Property Modal Functionality ---
+    function setupPropertyModal() {
+        addPropertyBtn.addEventListener('click', () => {
+            editingPropertyId = null; // Clear editing state for new property
+            modalTitle.textContent = 'Add New Property';
+            modalSubmitBtn.textContent = 'Add Property';
+            propertyForm.reset(); // Clear form fields
+            modalPropertyBHKGroup.style.display = 'none'; // Hide BHK by default
+            modalPropertyBHK.removeAttribute('required'); // Remove required if hidden
+            propertyModal.classList.add('show');
+        });
+
+        closeModalBtn.addEventListener('click', () => {
+            propertyModal.classList.remove('show');
+        });
+
+        // Close modal if clicked outside
+        propertyModal.addEventListener('click', (e) => {
+            if (e.target === propertyModal) {
+                propertyModal.classList.remove('show');
+            }
+        });
+
+        // Show/hide BHK based on property type selection in modal form
+        modalPropertyType.addEventListener('change', () => {
+            if (modalPropertyType.value === 'Apartment') {
+                modalPropertyBHKGroup.style.display = 'block';
+                modalPropertyBHK.setAttribute('required', 'required');
+            } else {
+                modalPropertyBHKGroup.style.display = 'none';
+                modalPropertyBHK.removeAttribute('required');
+                modalPropertyBHK.value = ''; // Clear BHK selection if type changes
+            }
+        });
+
+        propertyForm.addEventListener('submit', (e) => {
+            e.preventDefault(); // Prevent default form submission
+
+            // Basic validation
+            if (!propertyForm.checkValidity()) {
+                propertyForm.reportValidity(); // Show browser's validation messages
+                return;
+            }
+
+            const newOrUpdatedProperty = {
+                PropertyName: modalPropertyName.value.trim(),
+                Type: modalPropertyType.value,
+                BHK: modalPropertyBHK.value || '',
+                Budget: parseFloat(modalPropertyBudget.value),
+                CarpetArea: parseFloat(modalPropertyArea.value),
+                Possession: modalPropertyPossession.value,
+                Location: modalPropertyLocation.value.trim(),
+                Options: modalPropertyOptions.value.trim(),
+                // NEW: Description feed properties
+                Description: propertyDescription.value.trim(),
+                MapLocation: propertyMap.value.trim(),
+                VideoLink: propertyVideo.value.trim(),
+                Photos: propertyPhotos.value.split(',').map(url => url.trim()).filter(url => url),
+                Brochures: propertyBrochures.value.split('\n').filter(line => line.trim()).map(line => {
+                    const [name, url] = line.split('|').map(part => part.trim());
+                    return { name, url };
+                }).filter(brochure => brochure.name && brochure.url)
+            };
+
+            if (editingPropertyId) {
+                // Editing existing property
+                const index = propertyData.findIndex(p => p._id === editingPropertyId);
+                if (index !== -1) {
+                    propertyData[index] = { ...propertyData[index], ...newOrUpdatedProperty };
+                    alert('Property updated successfully!');
+                }
+            } else {
+                // Adding new property
+                newOrUpdatedProperty._id = generateUniqueId(); // Assign a new unique ID
+                propertyData.push(newOrUpdatedProperty);
+                alert('Property added successfully!');
+            }
+
+            savePropertyData();
+            propertyModal.classList.remove('show');
+            clearFilters(); // Refresh display with updated data
+        });
+    }
+
+    // NEW: Setup description feed toggle
+    function setupDescriptionToggle() {
+      descriptionToggle.addEventListener('click', () => {
+        descriptionToggle.classList.toggle('active');
+        descriptionFields.classList.toggle('show');
+      });
+    }
+
+    // NEW: Setup description modal
+    function setupDescriptionModal() {
+      closeDescriptionModalBtn.addEventListener('click', () => {
+        descriptionModal.classList.remove('show');
+      });
+
+      // Close modal if clicked outside
+      descriptionModal.addEventListener('click', (e) => {
+        if (e.target === descriptionModal) {
+          descriptionModal.classList.remove('show');
+        }
+      });
+
+      // Toggle description container height
+      toggleDescriptionBtn.addEventListener('click', () => {
+        descriptionFeedContainer.classList.toggle('expanded');
+      });
+    }
+
+    // NEW: Show description feed for a property
+    function showDescriptionFeed(propertyId) {
+      const property = propertyData.find(p => p._id === propertyId);
+      if (!property) return;
+
+      // Populate modal with property data
+      descriptionPropertyName.textContent = property.PropertyName || 'Property Details';
+      descriptionLocation.textContent = property.Location || 'Location not specified';
+      descriptionBudget.textContent = `₹${property.Budget || 'N/A'} L`;
+      descriptionContent.textContent = property.Description || 'No description available.';
+
+      // Clear previous content
+      mapContainer.innerHTML = '';
+      videoContainer.innerHTML = '';
+      photoGallery.innerHTML = '';
+      brochuresList.innerHTML = '';
+
+      // Map Location
+      if (property.MapLocation) {
+        const iframe = document.createElement('iframe');
+        iframe.src = property.MapLocation;
+        iframe.width = '100%';
+        iframe.height = '100%';
+        iframe.style.border = '0';
+        iframe.allowFullscreen = true;
+        iframe.loading = 'lazy';
+        mapContainer.appendChild(iframe);
+      } else {
+        mapContainer.innerHTML = '<div class="w-full h-full flex items-center justify-center"><i class="fas fa-map text-4xl text-slate-400"></i><p class="ml-2 text-slate-500">No map available</p></div>';
+      }
+
+      // Video Tour
+      if (property.VideoLink) {
+        const iframe = document.createElement('iframe');
+        iframe.src = property.VideoLink;
+        iframe.width = '100%';
+        iframe.height = '100%';
+        iframe.style.border = '0';
+        iframe.allowFullscreen = true;
+        iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+        videoContainer.appendChild(iframe);
+      } else {
+        videoContainer.innerHTML = '<div class="w-full h-full flex items-center justify-center"><i class="fas fa-play-circle text-4xl text-slate-400"></i><p class="ml-2 text-slate-500">No video available</p></div>';
+      }
+
+      // Photo Gallery
+      if (property.Photos && property.Photos.length > 0) {
+        property.Photos.forEach(photoUrl => {
+          const mediaItem = document.createElement('div');
+          mediaItem.className = 'media-item';
+          mediaItem.innerHTML = `<img src="${photoUrl}" alt="Property photo" onerror="this.src='https://via.placeholder.com/150?text=Image+Error'">`;
+          photoGallery.appendChild(mediaItem);
+        });
+      } else {
+        photoGallery.innerHTML = '<div class="media-item"><i class="fas fa-image"></i></div>';
+      }
+
+      // Brochures
+      if (property.Brochures && property.Brochures.length > 0) {
+        property.Brochures.forEach(brochure => {
+          const brochureItem = document.createElement('div');
+          brochureItem.className = 'brochure-item';
+          brochureItem.innerHTML = `
+            <i class="fas fa-file-pdf"></i>
+            <a href="${brochure.url}" target="_blank">${brochure.name}</a>
+          `;
+          brochuresList.appendChild(brochureItem);
+        });
+      } else {
+        brochuresList.innerHTML = '<div class="brochure-item"><i class="fas fa-file-pdf"></i><span>No brochures available</span></div>';
+      }
+
+      // Show the modal
+      descriptionModal.classList.add('show');
+    }
+
+    // --- Handle Edit/Delete Buttons on Cards ---
+    function handlePropertyCardActions(event) {
+        const target = event.target;
+        const propertyId = target.dataset.id || target.closest('button')?.dataset.id; // Get ID from button or its child icon
+
+        if (!propertyId) return;
+
+        if (target.classList.contains('edit-btn') || target.closest('.edit-btn')) {
+            editProperty(propertyId);
+        } else if (target.classList.contains('delete-btn') || target.closest('.delete-btn')) {
+            deleteProperty(propertyId);
+        }
+        // NEW: Handle view more button
+        else if (target.classList.contains('view-more-btn') || target.closest('.view-more-btn')) {
+            showDescriptionFeed(propertyId);
+        }
+    }
+
+    function editProperty(id) {
+        const propertyToEdit = propertyData.find(p => p._id === id);
+        if (!propertyToEdit) {
+            alert('Property not found!');
+            return;
+        }
+
+        editingPropertyId = id; // Set the ID of the property being edited
+        modalTitle.textContent = 'Edit Property';
+        modalSubmitBtn.textContent = 'Save Changes';
+
+        // Populate the modal form fields
+        modalPropertyName.value = propertyToEdit.PropertyName || '';
+        modalPropertyType.value = propertyToEdit.Type || '';
+        modalPropertyBudget.value = propertyToEdit.Budget || '';
+        modalPropertyArea.value = propertyToEdit.CarpetArea || '';
+        modalPropertyPossession.value = propertyToEdit.Possession || '';
+        modalPropertyLocation.value = propertyToEdit.Location || '';
+        modalPropertyOptions.value = propertyToEdit.Options || '';
+
+        // NEW: Populate description feed fields
+        propertyDescription.value = propertyToEdit.Description || '';
+        propertyMap.value = propertyToEdit.MapLocation || '';
+        propertyVideo.value = propertyToEdit.VideoLink || '';
+        propertyPhotos.value = (propertyToEdit.Photos || []).join(', ');
+        propertyBrochures.value = (propertyToEdit.Brochures || []).map(b => `${b.name}|${b.url}`).join('\n');
+
+        // Show description fields if any data exists
+        if (propertyToEdit.Description || propertyToEdit.MapLocation || propertyToEdit.VideoLink ||
+            (propertyToEdit.Photos && propertyToEdit.Photos.length > 0) ||
+            (propertyToEdit.Brochures && propertyToEdit.Brochures.length > 0)) {
+          descriptionToggle.classList.add('active');
+          descriptionFields.classList.add('show');
+        } else {
+          descriptionToggle.classList.remove('active');
+          descriptionFields.classList.remove('show');
+        }
+
+        // Handle BHK visibility and value
+        if (propertyToEdit.Type === 'Apartment') {
+            modalPropertyBHKGroup.style.display = 'block';
+            modalPropertyBHK.value = propertyToEdit.BHK || '';
+            modalPropertyBHK.setAttribute('required', 'required');
+        } else {
+            modalPropertyBHKGroup.style.display = 'none';
+            modalPropertyBHK.removeAttribute('required');
+            modalPropertyBHK.value = '';
+        }
+
+        propertyModal.classList.add('show');
+    }
+
+    function deleteProperty(id) {
+        if (confirm('Are you sure you want to delete this property? This action cannot be undone.')) {
+            propertyData = propertyData.filter(p => p._id !== id);
+            savePropertyData();
+            alert('Property deleted successfully!');
+            filterProperties(); // Refresh the display
+        }
+    }
+
+  </script>
+</body>
+</html>
